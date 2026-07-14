@@ -1,0 +1,44 @@
+/* Thanh chức năng bên trái */
+.service-sidebar {
+  width: 250px;
+  padding: 20px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background-color: #fafafa;
+}
+
+/* Tiêu đề */
+.sidebar-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #00d2ff;
+}
+
+/* link của các chức năng */
+.sidebar-link {
+  display: block;
+  padding: 10px 12px;
+  color: #444;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+/* Hiệu ứng di chuột */
+.sidebar-link:hover {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+/* Trạng thái Active */
+.sidebar-link.active {
+  background-color: #eefaff;
+  color: #00a3cc;
+  font-weight: 500;
+}

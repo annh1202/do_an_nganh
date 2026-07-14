@@ -1,0 +1,103 @@
+.main-header {
+  background-color: #1a1a1a;
+  padding: 0 30px;
+  height: 60px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #222;
+  position: relative;
+}
+
+/* Hiệu ứng thanh ánh sáng công nghệ chạy dưới Header */
+.main-header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #00d2ff 0%, #00f2fe 100%);
+}
+
+/* Khối bọc gồm Logo và Menu để nằm sát nhau bên trái */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+/* Phần LOGO */
+.header-logo a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  background: linear-gradient(45deg, #00d2ff, #00f2fe);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Phần MENU điều hướng */
+.header-menu {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.header-link {
+  color: #bcbcbc;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+}
+
+.header-link:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.header-link.active {
+  color: #00d2ff;
+  font-weight: 600;
+  background-color: rgba(0, 210, 255, 0.1);
+}
+
+/* CỤM ĐĂNG KÝ / ĐĂNG NHẬP BÊN PHẢI */
+.header-auth {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.btn-login {
+  color: #bcbcbc;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.btn-login:hover {
+  color: #fff;
+}
+
+.btn-register {
+  background: linear-gradient(45deg, #00d2ff, #00f2fe);
+  color: #1a1a1a;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: opacity 0.2s;
+}
+
+.btn-register:hover {
+  opacity: 0.9;
+}
