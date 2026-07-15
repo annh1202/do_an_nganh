@@ -1,7 +1,7 @@
 // src/RouteConfig.js
 import React from 'react';
-import Home from '@/modules/Home';
-import LyThuyetCSDL from '@/modules/LyThuyetCSDL/LyThuyetCSDL';
+import Home from './modules/Home/Home';
+import LyThuyetCSDL from './modules/LyThuyetCSDL/LyThuyetCSDL';
 
 export const RouteConfig = [
   {
