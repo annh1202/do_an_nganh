@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -40,3 +41,4 @@ app.include_router(csdl_router)
 @app.get("/")
 def kiem_tra_he_thong():
     return {"status": "running", "message": "FastAPI đang hoạt động ổn định!"}
+

@@ -1,4 +1,7 @@
 # ====================<< NORMALIZE ATTRIBUTES >>====================
+from backend.app.modules.LyThuyetCSDL.schemas import PhuThuocHam
+
+
 def normalize_attr(attr):
     """
     Chuẩn hóa một thuộc tính đơn lẻ bằng cách loại bỏ khoảng trắng thừa
@@ -28,6 +31,20 @@ def normalize_attrs(attrs):
 
 
 # ====================<< NORMALIZE FDS >>====================
+def chuyen_tap_phu_thuoc_ham_sang_dang_class(tap_phu_thuoc_ham):
+    ket_qua = []
+
+    for phu_thuoc_ham in tap_phu_thuoc_ham:
+        ve_trai, ve_phai = map(str.strip, phu_thuoc_ham.split("→"))
+        ket_qua.append(
+            PhuThuocHam(
+                ve_trai=ve_trai,
+                ve_phai=ve_phai
+            )
+        )
+
+    return ket_qua
+
 def normalize_fd_to_tuple(fd_str):
     """
     Phân tích và chuẩn hóa một chuỗi phụ thuộc hàm thô (dạng "A -> B" hoặc "A → B")

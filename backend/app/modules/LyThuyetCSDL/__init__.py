@@ -1,18 +1,29 @@
 # backend/app/modules/LyThuyetCSDL/routes.py
 from fastapi import APIRouter, Request
-from backend.app.modules.LyThuyetCSDL.schemas import TrangThaiCSDLResponse
+
+from backend.app.modules.LyThuyetCSDL.config import KhoaSession
+from backend.app.modules.LyThuyetCSDL.schemas import DeBaiTimBaoDongTapThuocTinh, PhanHoi
 from backend.app.modules.LyThuyetCSDL.routes.bao_dong_tap_thuoc_tinh import (
-    router as router_bd_thuoc_tinh,
-    get_or_init_session,
-    build_response_state
+    router as router_bao_dong_tap_thuoc_tinh, get_session
 )
+from backend.app.modules.LyThuyetCSDL.utils.normalizers import chuyen_tap_phu_thuoc_ham_sang_dang_class
 
 router_tong = APIRouter(prefix="/api")
 
-@router_tong.get("/state", response_model=TrangThaiCSDLResponse, tags=["Trạng thái"])
+@router_tong.get("/state", response_model=PhanHoi[DeBaiTimBaoDongTapThuocTinh])
 def lay_trang_thai_ban_dau(request: Request):
-    # Lấy session tương ứng của user tạo request
-    state = get_or_init_session(request)
-    return build_response_state(state)
+    state = get_session(request)
 
-router_tong.include_router(router_bd_thuoc_tinh)
+    return PhanHoi(
+        doi_tuong=DeBaiTimBaoDongTapThuocTinh(
+            tap_thuoc_tinh=state[KhoaSession.TAP_THUOC_TINH],
+            tap_phu_thuoc_ham=chuyen_tap_phu_thuoc_ham_sang_dang_class(
+                state[KhoaSession.TAP_PHU_THUOC_HAM]
+            ),
+            tap_thuoc_tinh_muc_tieu=state[KhoaSession.TAP_THUOC_TINH_MUC_TIEU],
+        ),
+        loai_thong_bao="info",
+        thong_bao=""
+    )
+
+router_tong.include_router(router_bao_dong_tap_thuoc_tinh)

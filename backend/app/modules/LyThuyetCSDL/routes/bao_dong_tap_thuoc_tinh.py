@@ -1,160 +1,250 @@
 import re
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, logger
 from pydantic import BaseModel, Field
 
-from backend.app.modules.LyThuyetCSDL.schemas import TrangThaiCSDLResponse, PhuThuocHamSchema
+from backend.app.modules.LyThuyetCSDL.config import KhoaSession
+from backend.app.modules.LyThuyetCSDL.schemas import DeBaiTimBaoDongTapThuocTinh, PhuThuocHam, ThuocTinh, TapThuocTinh, \
+    PhanHoi, TapPhuThuocHam
 
 from backend.app.modules.LyThuyetCSDL.utils.actions import (
-    add_attribute, delete_attribute, clear_attributes,
-    add_fd, delete_fd, clear_fds
+    them_thuoc_tinh, xoa_thuoc_tinh, xoa_trong_tap_thuoc_tinh,
+    them_phu_thuoc_ham, xoa_phu_thuoc_ham, xoa_trong_tap_phu_thuoc_ham
 )
+from backend.app.modules.LyThuyetCSDL.utils.normalizers import chuyen_tap_phu_thuoc_ham_sang_dang_class
 
-router = APIRouter(prefix="/bao-dong-tap-thuoc-tinh", tags=["Bao đóng thuộc tính"])
-
-
-class YeuCauThemXoaThuocTinh(BaseModel):
-    attribute: str = Field(..., description="Thuộc tính cần xử lý")
+router = APIRouter(prefix="/bao-dong-tap-thuoc-tinh", tags=["Bao đóng tập thuộc tính"])
 
 
-def get_or_init_session(request: Request) -> dict:
+def get_session(request: Request) -> dict:
     """Khởi tạo session nếu user mới truy cập lần đầu"""
-    if "bao_dong_thuoc_tinh" not in request.session:
-        request.session["bao_dong_thuoc_tinh"] = {
-            "R": [],
-            "F": [],
-            "X": []
+    if KhoaSession.BAO_DONG_TAP_THUOC_TINH not in request.session:
+        request.session[KhoaSession.BAO_DONG_TAP_THUOC_TINH] = {
+            KhoaSession.TAP_THUOC_TINH: [],
+            KhoaSession.TAP_PHU_THUOC_HAM: [],
+            KhoaSession.TAP_THUOC_TINH_MUC_TIEU: []
         }
-    return request.session["bao_dong_thuoc_tinh"]
-
-
-def build_response_state(state):
-    """
-    Parse linh hoạt tập phụ thuộc hàm F từ chuỗi (format_fd) thành cấu trúc JSON
-    để React nhận diện và hiển thị chuẩn xác, bất kể định dạng mũi tên nào.
-    """
-    parsed_fds = []
-    for fd_str in state.get("F", []):
-        if isinstance(fd_str, str):
-            # Tách chuỗi dựa trên ký tự mũi tên phổ biến: "->" hoặc "→"
-            # Kết quả trả về 2 vế độc lập, loại bỏ khoảng trắng thừa xung quanh
-            parts = re.split(r'->|→', fd_str)
-            if len(parts) == 2:
-                parsed_fds.append({
-                    "lhs": parts[0].strip(),
-                    "rhs": parts[1].strip()
-                })
-            else:
-                # Phòng hờ chuỗi định dạng lạ, giữ nguyên làm vế trái
-                parsed_fds.append({
-                    "lhs": fd_str.strip(),
-                    "rhs": ""
-                })
-
-    return {
-        "R": state.get("R", []),
-        "F": parsed_fds,
-        "X": state.get("X", [])
-    }
+        
+    return request.session[KhoaSession.BAO_DONG_TAP_THUOC_TINH]
 
 
 # ====================<< TẬP THUỘC TÍNH R >>====================
-
-@router.post("/them-thuoc-tinh", response_model=TrangThaiCSDLResponse)
-def route_them_thuoc_tinh(data: YeuCauThemXoaThuocTinh, request: Request):
-    state = get_or_init_session(request)
+@router.post("/them-thuoc-tinh", response_model=PhanHoi[DeBaiTimBaoDongTapThuocTinh])
+def route_them_thuoc_tinh(data: ThuocTinh, request: Request):
+    state = get_session(request)
 
     # Gọi trực tiếp action để xử lý. Action tự chuẩn hóa, tự check lỗi định dạng và check trùng
-    is_success, msg_type, message = add_attribute(data.attribute, state["R"])
-    if not is_success:
+    co_thanh_cong, loai_thong_bao, thong_bao = them_thuoc_tinh(data.thuoc_tinh, state[KhoaSession.TAP_THUOC_TINH])
+    if not co_thanh_cong:
         # Nếu nghiệp vụ thất bại (False), ném thông báo chi tiết của action dưới dạng lỗi HTTP 400
-        raise HTTPException(status_code=400, detail=message)
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "loai_thong_bao": loai_thong_bao,
+                "thong_bao": thong_bao,
+            }
+        )
 
     # Đồng bộ ép cứng xuống Session Cookie bằng một bản sao mới (tránh lỗi nuốt thuộc tính cũ)
-    request.session["bao_dong_thuoc_tinh"] = {
-        "R": list(state["R"]),
-        "F": list(state["F"]),
-        "X": list(state["X"])
+    request.session[KhoaSession.BAO_DONG_TAP_THUOC_TINH] = {
+        KhoaSession.TAP_THUOC_TINH: list(state[KhoaSession.TAP_THUOC_TINH]),
+        KhoaSession.TAP_PHU_THUOC_HAM: list(state[KhoaSession.TAP_PHU_THUOC_HAM]),
+        KhoaSession.TAP_THUOC_TINH_MUC_TIEU: list(state[KhoaSession.TAP_THUOC_TINH_MUC_TIEU])
     }
-    return build_response_state(request.session["bao_dong_thuoc_tinh"])
+
+    return PhanHoi(
+        doi_tuong=DeBaiTimBaoDongTapThuocTinh(
+            tap_thuoc_tinh=state[KhoaSession.TAP_THUOC_TINH],
+            tap_phu_thuoc_ham=chuyen_tap_phu_thuoc_ham_sang_dang_class(
+                state[KhoaSession.TAP_PHU_THUOC_HAM]
+            ),
+            tap_thuoc_tinh_muc_tieu=state[KhoaSession.TAP_THUOC_TINH_MUC_TIEU]
+        ),
+        loai_thong_bao=loai_thong_bao,
+        thong_bao=thong_bao
+    )
 
 
-@router.post("/xoa-thuoc-tinh", response_model=TrangThaiCSDLResponse)
-def route_xoa_thuoc_tinh(data: YeuCauThemXoaThuocTinh, request: Request):
-    state = get_or_init_session(request)
+@router.post("/xoa-thuoc-tinh", response_model=PhanHoi[DeBaiTimBaoDongTapThuocTinh])
+def route_xoa_thuoc_tinh(data: ThuocTinh, request: Request):
+    state = get_session(request)
 
-    is_success, msg_type, message = delete_attribute(data.attribute, state["R"], state["F"], state["X"])
-    if not is_success:
-        raise HTTPException(status_code=400, detail=message)
+    co_thanh_cong, loai_thong_bao, thong_bao = xoa_thuoc_tinh(
+        data.thuoc_tinh,
+        state[KhoaSession.TAP_THUOC_TINH],
+        state[KhoaSession.TAP_PHU_THUOC_HAM],
+        state[KhoaSession.TAP_THUOC_TINH_MUC_TIEU]
+    )
 
-    request.session["bao_dong_thuoc_tinh"] = {
-        "R": list(state["R"]),
-        "F": list(state["F"]),
-        "X": list(state["X"])
+    if not co_thanh_cong:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "loai_thong_bao": loai_thong_bao,
+                "thong_bao": thong_bao,
+            }
+        )
+
+    request.session[KhoaSession.BAO_DONG_TAP_THUOC_TINH] = {
+        KhoaSession.TAP_THUOC_TINH: list(state[KhoaSession.TAP_THUOC_TINH]),
+        KhoaSession.TAP_PHU_THUOC_HAM: list(state[KhoaSession.TAP_PHU_THUOC_HAM]),
+        KhoaSession.TAP_THUOC_TINH_MUC_TIEU: list(state[KhoaSession.TAP_THUOC_TINH_MUC_TIEU])
     }
-    return build_response_state(request.session["bao_dong_thuoc_tinh"])
+
+    return PhanHoi(
+        doi_tuong=DeBaiTimBaoDongTapThuocTinh(
+            tap_thuoc_tinh=state[KhoaSession.TAP_THUOC_TINH],
+            tap_phu_thuoc_ham=chuyen_tap_phu_thuoc_ham_sang_dang_class(
+                state[KhoaSession.TAP_PHU_THUOC_HAM]
+            ),
+            tap_thuoc_tinh_muc_tieu=state[KhoaSession.TAP_THUOC_TINH_MUC_TIEU]
+        ),
+        loai_thong_bao=loai_thong_bao,
+        thong_bao=thong_bao
+    )
 
 
-@router.post("/xoa-trong-thuoc-tinh", response_model=TrangThaiCSDLResponse)
+@router.post("/xoa-trong-thuoc-tinh", response_model=PhanHoi[DeBaiTimBaoDongTapThuocTinh])
 def route_xoa_trong_thuoc_tinh(request: Request):
-    state = get_or_init_session(request)
+    state = get_session(request)
 
-    is_success, msg_type, message = clear_attributes(state["R"], state["F"], state["X"])
-    if not is_success:
-        raise HTTPException(status_code=400, detail=message)
+    co_thanh_cong, loai_thong_bao, thong_bao = xoa_trong_tap_thuoc_tinh(
+        state[KhoaSession.TAP_THUOC_TINH],
+        state[KhoaSession.TAP_PHU_THUOC_HAM],
+        state[KhoaSession.TAP_THUOC_TINH_MUC_TIEU]
+    )
 
-    request.session["bao_dong_thuoc_tinh"] = {
-        "R": list(state["R"]),
-        "F": list(state["F"]),
-        "X": list(state["X"])
+    if not co_thanh_cong:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "loai_thong_bao": loai_thong_bao,
+                "thong_bao": thong_bao,
+            }
+        )
+
+    request.session[KhoaSession.BAO_DONG_TAP_THUOC_TINH] = {
+        KhoaSession.TAP_THUOC_TINH: list(state[KhoaSession.TAP_THUOC_TINH]),
+        KhoaSession.TAP_PHU_THUOC_HAM: list(state[KhoaSession.TAP_PHU_THUOC_HAM]),
+        KhoaSession.TAP_THUOC_TINH_MUC_TIEU: list(state[KhoaSession.TAP_THUOC_TINH_MUC_TIEU])
     }
-    return build_response_state(request.session["bao_dong_thuoc_tinh"])
+
+    return PhanHoi(
+        doi_tuong=DeBaiTimBaoDongTapThuocTinh(
+            tap_thuoc_tinh=state[KhoaSession.TAP_THUOC_TINH],
+            tap_phu_thuoc_ham=chuyen_tap_phu_thuoc_ham_sang_dang_class(
+                state[KhoaSession.TAP_PHU_THUOC_HAM]
+            ),
+            tap_thuoc_tinh_muc_tieu=state[KhoaSession.TAP_THUOC_TINH_MUC_TIEU]
+        ),
+        loai_thong_bao=loai_thong_bao,
+        thong_bao=thong_bao
+    )
 
 
 # ====================<< TẬP PHỤ THUỘC HÀM F >>====================
-
-@router.post("/them-phu-thuoc-ham", response_model=TrangThaiCSDLResponse)
-def route_them_phu_thuoc_ham(data: PhuThuocHamSchema, request: Request):
-    state = get_or_init_session(request)
+@router.post("/them-phu-thuoc-ham", response_model=PhanHoi[DeBaiTimBaoDongTapThuocTinh])
+def route_them_phu_thuoc_ham(data: PhuThuocHam, request: Request):
+    state = get_session(request)
 
     # Gọi trực tiếp action thêm phụ thuộc hàm, truyền thẳng vế trái và vế phải thô vào
-    is_success, msg_type, message = add_fd(data.lhs, data.rhs, state["R"], state["F"])
-    if not is_success:
-        raise HTTPException(status_code=400, detail=message)
+    co_thanh_cong, loai_thong_bao, thong_bao = them_phu_thuoc_ham(
+        data.ve_trai,
+        data.ve_phai,
+        state[KhoaSession.TAP_THUOC_TINH],
+        state[KhoaSession.TAP_PHU_THUOC_HAM]
+    )
 
-    request.session["bao_dong_thuoc_tinh"] = {
-        "R": list(state["R"]),
-        "F": list(state["F"]),
-        "X": list(state["X"])
+    if not co_thanh_cong:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "loai_thong_bao": loai_thong_bao,
+                "thong_bao": thong_bao,
+            }
+        )
+
+    request.session[KhoaSession.BAO_DONG_TAP_THUOC_TINH] = {
+        KhoaSession.TAP_THUOC_TINH: list(state[KhoaSession.TAP_THUOC_TINH]),
+        KhoaSession.TAP_PHU_THUOC_HAM: list(state[KhoaSession.TAP_PHU_THUOC_HAM]),
+        KhoaSession.TAP_THUOC_TINH_MUC_TIEU: list(state[KhoaSession.TAP_THUOC_TINH_MUC_TIEU])
     }
-    return build_response_state(request.session["bao_dong_thuoc_tinh"])
+
+    print(state[KhoaSession.TAP_PHU_THUOC_HAM])
+
+    return PhanHoi(
+        doi_tuong=DeBaiTimBaoDongTapThuocTinh(
+            tap_thuoc_tinh=state[KhoaSession.TAP_THUOC_TINH],
+            tap_phu_thuoc_ham=chuyen_tap_phu_thuoc_ham_sang_dang_class(
+                state[KhoaSession.TAP_PHU_THUOC_HAM]
+            ),
+            tap_thuoc_tinh_muc_tieu=state[KhoaSession.TAP_THUOC_TINH_MUC_TIEU]
+        ),
+        loai_thong_bao=loai_thong_bao,
+        thong_bao=thong_bao
+    )
 
 
-@router.post("/xoa-phu-thuoc-ham", response_model=TrangThaiCSDLResponse)
-def route_xoa_phu_thuoc_ham(data: PhuThuocHamSchema, request: Request):
-    state = get_or_init_session(request)
+@router.post("/xoa-phu-thuoc-ham", response_model=PhanHoi[DeBaiTimBaoDongTapThuocTinh])
+def route_xoa_phu_thuoc_ham(data: PhuThuocHam, request: Request):
+    state = get_session(request)
 
-    is_success, msg_type, message = delete_fd(data.lhs, data.rhs, state["F"])
-    if not is_success:
-        raise HTTPException(status_code=400, detail=message)
+    co_thanh_cong, loai_thong_bao, thong_bao = xoa_phu_thuoc_ham(
+        data.ve_trai,
+        data.ve_phai,
+        state[KhoaSession.TAP_PHU_THUOC_HAM]
+    )
 
-    request.session["bao_dong_thuoc_tinh"] = {
-        "R": list(state["R"]),
-        "F": list(state["F"]),
-        "X": list(state["X"])
+    if not co_thanh_cong:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "loai_thong_bao": loai_thong_bao,
+                "thong_bao": thong_bao,
+            }
+        )
+
+    request.session[KhoaSession.BAO_DONG_TAP_THUOC_TINH] = {
+        KhoaSession.TAP_THUOC_TINH: list(state[KhoaSession.TAP_THUOC_TINH]),
+        KhoaSession.TAP_PHU_THUOC_HAM: list(state[KhoaSession.TAP_PHU_THUOC_HAM]),
+        KhoaSession.TAP_THUOC_TINH_MUC_TIEU: list(state[KhoaSession.TAP_THUOC_TINH_MUC_TIEU])
     }
-    return build_response_state(request.session["bao_dong_thuoc_tinh"])
+
+    return PhanHoi(
+        doi_tuong=DeBaiTimBaoDongTapThuocTinh(
+            tap_thuoc_tinh=state[KhoaSession.TAP_THUOC_TINH],
+            tap_phu_thuoc_ham=chuyen_tap_phu_thuoc_ham_sang_dang_class(
+                state[KhoaSession.TAP_PHU_THUOC_HAM]
+            ),
+            tap_thuoc_tinh_muc_tieu=state[KhoaSession.TAP_THUOC_TINH_MUC_TIEU]
+        ),
+        loai_thong_bao=loai_thong_bao,
+        thong_bao=thong_bao
+    )
 
 
-@router.post("/xoa-trong-phu-thuoc-ham", response_model=TrangThaiCSDLResponse)
+@router.post("/xoa-trong-phu-thuoc-ham", response_model=PhanHoi[DeBaiTimBaoDongTapThuocTinh])
 def route_xoa_trong_phu_thuoc_ham(request: Request):
-    state = get_or_init_session(request)
+    state = get_session(request)
 
-    clear_fds(state["F"])
+    co_thanh_cong, loai_thong_bao, thong_bao = xoa_trong_tap_phu_thuoc_ham(
+        state[KhoaSession.TAP_PHU_THUOC_HAM]
+    )
 
-    request.session["bao_dong_thuoc_tinh"] = {
-        "R": list(state["R"]),
-        "F": list(state["F"]),
-        "X": list(state["X"])
+    request.session[KhoaSession.BAO_DONG_TAP_THUOC_TINH] = {
+        KhoaSession.TAP_THUOC_TINH: list(state[KhoaSession.TAP_THUOC_TINH]),
+        KhoaSession.TAP_PHU_THUOC_HAM: list(state[KhoaSession.TAP_PHU_THUOC_HAM]),
+        KhoaSession.TAP_THUOC_TINH_MUC_TIEU: list(state[KhoaSession.TAP_THUOC_TINH_MUC_TIEU])
     }
-    return build_response_state(request.session["bao_dong_thuoc_tinh"])
+
+    return PhanHoi(
+        doi_tuong=DeBaiTimBaoDongTapThuocTinh(
+            tap_thuoc_tinh=state[KhoaSession.TAP_THUOC_TINH],
+            tap_phu_thuoc_ham=chuyen_tap_phu_thuoc_ham_sang_dang_class(
+                state[KhoaSession.TAP_PHU_THUOC_HAM]
+            ),
+            tap_thuoc_tinh_muc_tieu=state[KhoaSession.TAP_THUOC_TINH_MUC_TIEU]
+        ),
+        loai_thong_bao=loai_thong_bao,
+        thong_bao=thong_bao
+    )

@@ -11,7 +11,7 @@ const TapPhuThuocHam = ({ tap_phu_thuoc_ham = [], them, xoa, xoa_trong }) => {
     const vt = veTrai.trim().toUpperCase();
     const vp = vePhai.trim().toUpperCase();
     if (vt && vp && them) {
-      them({ lhs: vt, rhs: vp }); // Gửi object chứa vế trái (lhs) và vế phải (rhs) ra ngoài
+      them({ ve_trai: vt, ve_phai: vp }); // Gửi object chứa vế trái (ve_trai) và vế phải (ve_phai) ra ngoài
       setVeTrai('');              // Reset ô nhập liệu
       setVePhai('');
     }
@@ -23,7 +23,7 @@ const TapPhuThuocHam = ({ tap_phu_thuoc_ham = [], them, xoa, xoa_trong }) => {
     const vt = veTrai.trim().toUpperCase();
     const vp = vePhai.trim().toUpperCase();
     if (vt && vp && xoa) {
-      xoa({ lhs: vt, rhs: vp });
+      xoa({ ve_trai: vt, ve_phai: vp });
       setVeTrai('');
       setVePhai('');
     }
@@ -110,7 +110,7 @@ const TapPhuThuocHam = ({ tap_phu_thuoc_ham = [], them, xoa, xoa_trong }) => {
                   {"{ "}
                   {tap_phu_thuoc_ham.map((fd, index) => (
                     <span key={index}>
-                      {fd.lhs} → {fd.rhs}
+                      {fd.ve_trai} → {fd.ve_phai}
                       {index < tap_phu_thuoc_ham.length - 1 ? ', ' : ''}
                     </span>
                   ))}

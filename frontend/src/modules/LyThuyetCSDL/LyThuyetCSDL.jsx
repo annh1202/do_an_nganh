@@ -31,7 +31,7 @@ const LyThuyetCSDL = () => {
   const menuItems = [
     { id: 'gioi-thieu', label: '1. Giới thiệu nhóm chức năng' },
     { id: 'bao-dong-tap-thuoc-tinh', label: '2. Tìm bao đóng tập thuộc tính' },
-    { id: 'bao-dong-tap-phu-thuoc-ham', label: '3. Tìm bao đóng tập phụ thuộc ham' },
+    { id: 'bao-dong-tap-phu-thuoc-ham', label: '3. Tìm bao đóng tập phụ thuộc hàm' },
     { id: 'khoa-ung-vien', label: '4. Tìm khóa ứng viên' },
     { id: 'dang-chuan', label: '5. Nâng dạng chuẩn CSDL' },
   ];

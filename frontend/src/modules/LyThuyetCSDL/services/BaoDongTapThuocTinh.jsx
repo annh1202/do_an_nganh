@@ -10,115 +10,215 @@ const API_BASE_URL = 'http://localhost:8000/api';
 axios.defaults.withCredentials = true;
 
 const BaoDongTapThuocTinh = () => {
-  const [thuoc_tinh, setThuocTinh] = useState([]);
-  const [phu_thuoc_ham, setPhuThuocHam] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [tap_thuoc_tinh, set_tap_thuoc_tinh] = useState([]);
+  const [tap_phu_thuoc_ham, set_tap_phu_thuoc_ham] = useState([]);
+  const [loading, set_loading] = useState(false);
+  const [thong_bao, set_thong_bao] = useState(null);
 
   useEffect(() => {
     fetchData();
   }, []);
 
+  const hien_thong_bao = (loai_thong_bao, noi_dung) => {
+    set_thong_bao({
+      loai_thong_bao,
+      noi_dung,
+    });
+  };
+
   const fetchData = async () => {
     try {
-      setLoading(true);
+      set_loading(true);
       const response = await axios.get(`${API_BASE_URL}/state`);
-      setThuocTinh(response.data.R || []);
-      setPhuThuocHam(response.data.F || []);
-      setError('');
+      set_tap_thuoc_tinh(response.data.doi_tuong.tap_thuoc_tinh);
+      set_tap_phu_thuoc_ham(response.data.doi_tuong.tap_phu_thuoc_ham);
+      set_thong_bao(null);
     } catch (err) {
       console.error("Lỗi khi tải dữ liệu từ FastAPI:", err);
-      setError('Không thể kết nối đến máy chủ FastAPI.');
+      hien_thong_bao(
+        "danger",
+        "Không thể kết nối đến máy chủ FastAPI."
+      );
     } finally {
-      setLoading(false);
+      set_loading(false);
     }
   };
 
   // ==================== XỬ LÝ TẬP THUỘC TÍNH R ====================
 
-  const them_thuoc_tinh = async (newAttr) => {
+  const them_thuoc_tinh = async (thuoc_tinh_moi) => {
     try {
-      setError('');
+      set_thong_bao(null);
       const response = await axios.post(`${API_BASE_URL}/bao-dong-tap-thuoc-tinh/them-thuoc-tinh`, {
-        attribute: newAttr
+        thuoc_tinh: thuoc_tinh_moi
       });
-      setThuocTinh(response.data.R);
-      setPhuThuocHam(response.data.F);
+      set_tap_thuoc_tinh(response.data.doi_tuong.tap_thuoc_tinh);
+      set_tap_phu_thuoc_ham(response.data.doi_tuong.tap_phu_thuoc_ham);
+
+      hien_thong_bao(
+        response.data.loai_thong_bao,
+        response.data.thong_bao
+      );
     } catch (err) {
       console.error("Lỗi thêm thuộc tính:", err);
-      setError(err.response?.data?.detail || 'Lỗi khi thêm thuộc tính.');
+      if (err.response?.data?.detail) {
+        hien_thong_bao(
+          err.response.data.detail.loai_thong_bao,
+          err.response.data.detail.thong_bao
+      );
+      } else {
+        hien_thong_bao(
+          "danger",
+          "Có lỗi xảy ra."
+        );
+      }
     }
   };
 
-  const xoa_thuoc_tinh = async (attrToDelete) => {
+  const xoa_thuoc_tinh = async (thuoc_tinh_can_xoa) => {
     try {
-      setError('');
+      set_thong_bao(null);
       const response = await axios.post(`${API_BASE_URL}/bao-dong-tap-thuoc-tinh/xoa-thuoc-tinh`, {
-        attribute: attrToDelete
+        thuoc_tinh: thuoc_tinh_can_xoa
       });
-      setThuocTinh(response.data.R);
-      setPhuThuocHam(response.data.F);
+      set_tap_thuoc_tinh(response.data.doi_tuong.tap_thuoc_tinh);
+      set_tap_phu_thuoc_ham(response.data.doi_tuong.tap_phu_thuoc_ham);
+
+      hien_thong_bao(
+        response.data.loai_thong_bao,
+        response.data.thong_bao
+      );
     } catch (err) {
       console.error("Lỗi xóa thuộc tính:", err);
-      setError(err.response?.data?.detail || 'Lỗi khi xóa thuộc tính.');
+      if (err.response?.data?.detail) {
+      hien_thong_bao(
+        err.response.data.detail.loai_thong_bao,
+        err.response.data.detail.thong_bao
+      );
+      } else {
+        hien_thong_bao(
+          "danger",
+          "Có lỗi xảy ra."
+        );
+      }
     }
   };
 
   const xoa_trong_thuoc_tinh = async () => {
   try {
-    setError('');
+    set_thong_bao(null);
     const response = await axios.post(`${API_BASE_URL}/bao-dong-tap-thuoc-tinh/xoa-trong-thuoc-tinh`);
-    setThuocTinh(response.data.R);
-    setPhuThuocHam(response.data.F);
+    set_tap_thuoc_tinh(response.data.doi_tuong.tap_thuoc_tinh);
+    set_tap_phu_thuoc_ham(response.data.doi_tuong.tap_phu_thuoc_ham);
+
+    hien_thong_bao(
+      response.data.loai_thong_bao,
+      response.data.thong_bao
+    );
   } catch (err) {
     console.error("Lỗi dọn dẹp tập thuộc tính R:", err);
-    setError(err.response?.data?.detail || 'Lỗi khi xóa trống tập thuộc tính R.');
+    if (err.response?.data?.detail) {
+      hien_thong_bao(
+        err.response.data.detail.loai_thong_bao,
+        err.response.data.detail.thong_bao
+      );
+    } else {
+      hien_thong_bao(
+        "danger",
+        "Có lỗi xảy ra."
+      );
+    }
   }
 };
 
 
   // ==================== XỬ LÝ TẬP PHỤ THUỘC HÀM F ====================
 
-  const them_phu_thuoc_ham = async (newDf) => {
+  const them_phu_thuoc_ham = async (phu_thuoc_ham_moi) => {
     try {
-      setError('');
+      set_thong_bao(null);
       const response = await axios.post(`${API_BASE_URL}/bao-dong-tap-thuoc-tinh/them-phu-thuoc-ham`, {
-        lhs: newDf.lhs,
-        rhs: newDf.rhs
+        ve_trai: phu_thuoc_ham_moi.ve_trai,
+        ve_phai: phu_thuoc_ham_moi.ve_phai
       });
-      setThuocTinh(response.data.R);
-      setPhuThuocHam(response.data.F);
+      set_tap_thuoc_tinh(response.data.doi_tuong.tap_thuoc_tinh);
+      set_tap_phu_thuoc_ham(response.data.doi_tuong.tap_phu_thuoc_ham);
+
+      hien_thong_bao(
+        response.data.loai_thong_bao,
+        response.data.thong_bao
+      );
     } catch (err) {
       console.error("Lỗi thêm phụ thuộc hàm:", err);
-      setError(err.response?.data?.detail || 'Lỗi khi thêm phụ thuộc hàm.');
+      if (err.response?.data?.detail) {
+        hien_thong_bao(
+          err.response.data.detail.loai_thong_bao,
+          err.response.data.detail.thong_bao
+        );
+      } else {
+        hien_thong_bao(
+          "danger",
+          "Có lỗi xảy ra."
+        );
+      }
     }
   };
 
-  const xoa_phu_thuoc_ham = async (dfToDelete) => {
+  const xoa_phu_thuoc_ham = async (phu_thuoc_ham_can_xoa) => {
     try {
-      setError('');
+      set_thong_bao(null);
       const response = await axios.post(`${API_BASE_URL}/bao-dong-tap-thuoc-tinh/xoa-phu-thuoc-ham`, {
-        lhs: dfToDelete.lhs,
-        rhs: dfToDelete.rhs
+        ve_trai: phu_thuoc_ham_can_xoa.ve_trai,
+        ve_phai: phu_thuoc_ham_can_xoa.ve_phai
       });
-      setThuocTinh(response.data.R);
-      setPhuThuocHam(response.data.F);
+      set_tap_thuoc_tinh(response.data.doi_tuong.tap_thuoc_tinh);
+      set_tap_phu_thuoc_ham(response.data.doi_tuong.tap_phu_thuoc_ham);
+
+      hien_thong_bao(
+        response.data.loai_thong_bao,
+        response.data.thong_bao
+      );
     } catch (err) {
       console.error("Lỗi xóa phụ thuộc hàm:", err);
-      setError(err.response?.data?.detail || 'Lỗi khi xóa phụ thuộc hàm.');
+      if (err.response?.data?.detail) {
+        hien_thong_bao(
+          err.response.data.detail.loai_thong_bao,
+          err.response.data.detail.thong_bao
+        );
+      } else {
+        hien_thong_bao(
+          "danger",
+          "Có lỗi xảy ra."
+        );
+      }
     }
   };
 
   const xoa_trong_phu_thuoc_ham = async () => {
   try {
-    setError('');
+    set_thong_bao(null);
     const response = await axios.post(`${API_BASE_URL}/bao-dong-tap-thuoc-tinh/xoa-trong-phu-thuoc-ham`);
-    setThuocTinh(response.data.R);
-    setPhuThuocHam(response.data.F);
+    set_tap_thuoc_tinh(response.data.doi_tuong.tap_thuoc_tinh);
+    set_tap_phu_thuoc_ham(response.data.doi_tuong.tap_phu_thuoc_ham);
+
+    hien_thong_bao(
+      response.data.loai_thong_bao,
+      response.data.thong_bao
+    );
   } catch (err) {
     console.error("Lỗi dọn dẹp tập phụ thuộc hàm F:", err);
 
-    setError(err.response?.data?.detail || 'Lỗi khi xóa trống tập phụ thuộc hàm F.');
+    if (err.response?.data?.detail) {
+      hien_thong_bao(
+        err.response.data.detail.loai_thong_bao,
+        err.response.data.detail.thong_bao
+      );
+    } else {
+      hien_thong_bao(
+        "danger",
+        "Có lỗi xảy ra."
+      );
+    }
   }
 };
 
@@ -126,11 +226,17 @@ const BaoDongTapThuocTinh = () => {
     <div className="container py-3">
       <h2 className="text-center mb-4 fw-bold text-dark">Tìm bao đóng tập thuộc tính</h2>
 
-      {error && (
-        <div className="alert alert-danger alert-dismissible fade show" role="alert">
-          <i className="bi bi-exclamation-triangle-fill me-2"></i>
-          {error}
-          <button type="button" className="btn-close" onClick={() => setError('')}></button>
+      {thong_bao && (
+        <div
+          className={`alert alert-${thong_bao.loai_thong_bao} alert-dismissible fade show`}
+          role="alert"
+        >
+          {thong_bao.noi_dung}
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => set_thong_bao(null)}
+          ></button>
         </div>
       )}
 
@@ -143,18 +249,18 @@ const BaoDongTapThuocTinh = () => {
       ) : (
         <>
           <TapThuocTinh
-            tap_thuoc_tinh={thuoc_tinh}
+            tap_thuoc_tinh={tap_thuoc_tinh}
             them={them_thuoc_tinh}
             xoa={xoa_thuoc_tinh}
             xoa_trong={xoa_trong_thuoc_tinh}
           />
           
-          <TapPhuThuocHam
-            tap_phu_thuoc_ham={phu_thuoc_ham}
-            them={them_phu_thuoc_ham}
-            xoa={xoa_phu_thuoc_ham}
-            xoa_trong={xoa_trong_phu_thuoc_ham}
-          />
+            <TapPhuThuocHam
+              tap_phu_thuoc_ham={tap_phu_thuoc_ham}
+              them={them_phu_thuoc_ham}
+              xoa={xoa_phu_thuoc_ham}
+              xoa_trong={xoa_trong_phu_thuoc_ham}
+            />
         </>
       )}
     </div>
