@@ -20,7 +20,7 @@ def lay_trang_thai_ban_dau(request: Request):
             tap_phu_thuoc_ham=chuyen_tap_phu_thuoc_ham_sang_dang_class(
                 state[KhoaSession.TAP_PHU_THUOC_HAM]
             ),
-            tap_thuoc_tinh_muc_tieu=state[KhoaSession.TAP_THUOC_TINH_MUC_TIEU],
+            tap_thuoc_tinh_can_tim=state[KhoaSession.TAP_THUOC_TINH_CAN_TIM],
         ),
         loai_thong_bao="info",
         thong_bao=""

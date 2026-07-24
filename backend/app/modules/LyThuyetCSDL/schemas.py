@@ -42,7 +42,7 @@ class DeBaiTimBaoDongTapThuocTinh(BaseModel):
         description="Tập phụ thuộc hàm F"
     )
 
-    tap_thuoc_tinh_muc_tieu: list[str] = Field(
+    tap_thuoc_tinh_can_tim: list[str] = Field(
         default_factory=list,
         description="Tập thuộc tính cần tìm bao đóng X"
     )

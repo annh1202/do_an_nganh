@@ -81,12 +81,19 @@ def xoa_trong_tap_thuoc_tinh(attributes, fds, target_attrs=None):
         tuple: Bộ ba giá trị kết quả thực hiện hành động.
     """
     if target_attrs is not None:
-        if fds:
-            return False, LoaiThongBao.WARNING, "Không thể xoá toàn bộ tập thuộc tính khi F hoặc X chưa rỗng"
+        if fds or target_attrs:
+            return (
+                False,
+                LoaiThongBao.WARNING,
+                "Không thể xoá toàn bộ tập thuộc tính khi F hoặc X chưa rỗng"
+            )
     else:
         if fds:
-            return False, LoaiThongBao.WARNING, "Không thể xoá toàn bộ tập thuộc tính khi F chưa rỗng"
-
+            return (
+                False,
+                LoaiThongBao.WARNING,
+                "Không thể xoá toàn bộ tập thuộc tính khi F chưa rỗng"
+            )
     attributes.clear()
 
     return True, LoaiThongBao.SUCCESS, "Đã xoá toàn bộ tập thuộc tính"
@@ -169,7 +176,7 @@ def xoa_trong_tap_phu_thuoc_ham(fds):
 
 
 # ====================<< TARGET ATTRIBUTE >>====================
-def them_thuoc_tinh_muc_tieu(attribute, attributes, target_attrs):
+def them_thuoc_tinh_can_tim(attribute, attributes, target_attrs):
     """
     Chuẩn hóa và nạp thêm một thuộc tính đích vào tập thuộc tính mục tiêu (X) để chuẩn bị tìm bao đóng thuộc tính.
     Ràng buộc: Thuộc tính bổ sung phải thuộc tập thuộc tính gốc (R) và chưa tồn tại sẵn trong tập X.
@@ -199,7 +206,7 @@ def them_thuoc_tinh_muc_tieu(attribute, attributes, target_attrs):
     return True, LoaiThongBao.SUCCESS, f"Đã thêm thuộc tính"
 
 
-def xoa_thuoc_tinh_muc_tieu(attribute, target_attrs):
+def xoa_thuoc_tinh_can_tim(attribute, target_attrs):
     """
     Xóa một thuộc tính cụ thể ra khỏi tập thuộc tính mục tiêu (X).
 
@@ -223,7 +230,7 @@ def xoa_thuoc_tinh_muc_tieu(attribute, target_attrs):
     return True, LoaiThongBao.SUCCESS, f"Đã xoá thuộc tính {attribute} khỏi X"
 
 
-def xoa_trong_tap_thuoc_tinh_muc_tieu(target_attrs):
+def xoa_trong_tap_thuoc_tinh_can_tim(target_attrs):
     """
     Xóa trống toàn bộ tập thuộc tính mục tiêu (X) hiện tại.
 
