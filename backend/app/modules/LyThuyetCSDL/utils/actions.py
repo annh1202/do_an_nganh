@@ -121,7 +121,7 @@ def them_phu_thuoc_ham(thuoc_tinh_ve_trai, thuoc_tinh_ve_phai, attributes, fds):
     if not ve_trai or not ve_phai:
         return False, LoaiThongBao.DANGER, "Hai vế của phụ thuộc hàm không được rỗng"
 
-    if not is_valid_fd(ve_trai, ve_phai, attributes):
+    if attributes is not None and not is_valid_fd(ve_trai, ve_phai, attributes):
         return False, LoaiThongBao.WARNING, "Mọi thuộc tính trong F phải thuộc tập R"
 
     if is_trivial_fd(thuoc_tinh_ve_trai, thuoc_tinh_ve_phai):

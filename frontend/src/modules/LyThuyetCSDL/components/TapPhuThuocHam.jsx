@@ -53,7 +53,6 @@ const TapPhuThuocHam = ({
 
   return (
     <div className="container mt-4">
-      <form id="fd_form">
         <div className="row mb-4 p-3 border rounded bg-light">
           <div className="col-md-5">
             <h5 className="fw-bold mb-3">Tạo tập phụ thuộc hàm F</h5>
@@ -139,7 +138,6 @@ const TapPhuThuocHam = ({
             />
           </div>
         </div>
-      </form>
     </div>
   );
 };

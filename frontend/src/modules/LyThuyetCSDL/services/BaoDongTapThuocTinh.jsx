@@ -8,7 +8,7 @@ import { TaoTapThuocTinhCanTim } from "../actions/TaoTapThuocTinhCanTim";
 import TapThuocTinhApi from "../api/TapThuocTinh"
 import TapPhuThuocHamApi from "../api/TapPhuThuocHam"
 import TapThuocTinhCanTimApi from "../api/TapThuocTinhCanTim"
-import { StateActions } from "../actions/State";
+import { StateActions } from "../actions/StateBaoDongTapThuocTinh";
 
 const BaoDongTapThuocTinh = () => {
     const [tap_thuoc_tinh, setTapThuocTinh] = useState([]);

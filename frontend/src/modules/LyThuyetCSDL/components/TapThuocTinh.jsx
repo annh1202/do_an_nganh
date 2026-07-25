@@ -44,7 +44,7 @@ const TapThuocTinh = ({
 
   return (
     <div className="container mt-4">
-      <form id="attr_form">
+      <form>
         <div className="row mb-4 p-3 border rounded bg-light">
           {/* Cột trái: Nhập liệu và các nút chức năng */}
           <div className="col-md-5">

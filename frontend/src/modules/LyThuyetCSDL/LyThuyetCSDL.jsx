@@ -29,7 +29,7 @@ const ChiTietBaiHoc = () => {
 
 const LyThuyetCSDL = () => {
   const menuItems = [
-    { id: 'gioi-thieu', label: '1. Giới thiệu nhóm chức năng' },
+    { id: 'gioi-thieu', label: '1. Giới thiệu các chức năng' },
     { id: 'bao-dong-tap-thuoc-tinh', label: '2. Tìm bao đóng tập thuộc tính' },
     { id: 'bao-dong-tap-phu-thuoc-ham', label: '3. Tìm bao đóng tập phụ thuộc hàm' },
     { id: 'khoa-ung-vien', label: '4. Tìm khóa ứng viên' },
@@ -56,14 +56,37 @@ const LyThuyetCSDL = () => {
             <Routes>
               {/* Đường dẫn mặc định khi chưa chọn bài học */}
               <Route
-                index
-                element={
-                  <div className="text-center py-5 text-muted">
-                    <i className="bi bi-arrow-left-circle fs-1 d-block mb-3 text-secondary"></i>
-                    <p className="fs-5">Vui lòng chọn một bài học ở danh mục bên trái để bắt đầu.</p>
-                  </div>
-                }
-              />
+  index
+  element={
+    <div
+      className="d-flex flex-column justify-content-center align-items-center text-center py-5"
+      style={{ minHeight: "65vh" }}
+    >
+      <div className="mb-4">
+        <i
+          className="bi bi-journal-bookmark-fill text-primary"
+          style={{ fontSize: "5rem" }}
+        ></i>
+      </div>
+
+      <h2 className="fw-bold text-primary mb-3">
+        Chào mừng đến với Module Lý thuyết Cơ sở dữ liệu
+      </h2>
+
+      <p className="text-muted fs-5 mb-4" style={{ maxWidth: "800px" }}>
+        Module cung cấp các công cụ hỗ trợ học tập như tìm bao đóng tập thuộc tính,
+        bao đóng tập phụ thuộc hàm, tìm khóa ứng viên và chuẩn hóa lược đồ quan hệ.
+      </p>
+
+      <div className="alert alert-light border shadow-sm px-4 py-3">
+        <i className="bi bi-arrow-left-circle-fill text-primary me-2"></i>
+        <span>
+          Vui lòng chọn một <strong>bài học</strong> trong danh mục bên trái để bắt đầu.
+        </span>
+      </div>
+    </div>
+  }
+/>
 
               {/* Đường dẫn động chi tiết bài học */}
               <Route path=":baiHocId" element={<ChiTietBaiHoc />} />

@@ -1,11 +1,8 @@
-import re
+from fastapi import APIRouter, HTTPException, Request
 
-from fastapi import APIRouter, HTTPException, Request, logger
-from pydantic import BaseModel, Field
 
 from backend.app.modules.LyThuyetCSDL.config import KhoaSession
-from backend.app.modules.LyThuyetCSDL.schemas import DeBaiTimBaoDongTapThuocTinh, PhuThuocHam, ThuocTinh, TapThuocTinh, \
-    PhanHoi, TapPhuThuocHam
+from backend.app.modules.LyThuyetCSDL.schemas import DeBaiTimBaoDongTapThuocTinh, PhuThuocHam, ThuocTinh, PhanHoi
 
 from backend.app.modules.LyThuyetCSDL.utils.actions import (
     them_thuoc_tinh, xoa_thuoc_tinh, xoa_trong_tap_thuoc_tinh,
@@ -13,26 +10,15 @@ from backend.app.modules.LyThuyetCSDL.utils.actions import (
     xoa_trong_tap_thuoc_tinh_can_tim
 )
 from backend.app.modules.LyThuyetCSDL.utils.normalizers import chuyen_tap_phu_thuoc_ham_sang_dang_class
+from backend.app.modules.LyThuyetCSDL.utils.session_helpers import lay_bao_dong_tap_thuoc_tinh_session
 
 router = APIRouter(prefix="/bao-dong-tap-thuoc-tinh", tags=["Bao đóng tập thuộc tính"])
-
-
-def get_session(request: Request) -> dict:
-    """Khởi tạo session nếu user mới truy cập lần đầu"""
-    if KhoaSession.BAO_DONG_TAP_THUOC_TINH not in request.session:
-        request.session[KhoaSession.BAO_DONG_TAP_THUOC_TINH] = {
-            KhoaSession.TAP_THUOC_TINH: [],
-            KhoaSession.TAP_PHU_THUOC_HAM: [],
-            KhoaSession.TAP_THUOC_TINH_CAN_TIM: []
-        }
-        
-    return request.session[KhoaSession.BAO_DONG_TAP_THUOC_TINH]
 
 
 # ====================<< TẬP THUỘC TÍNH R >>====================
 @router.post("/them-thuoc-tinh", response_model=PhanHoi[DeBaiTimBaoDongTapThuocTinh])
 def route_them_thuoc_tinh(data: ThuocTinh, request: Request):
-    state = get_session(request)
+    state = lay_bao_dong_tap_thuoc_tinh_session(request)
 
     # Gọi trực tiếp action để xử lý. Action tự chuẩn hóa, tự check lỗi định dạng và check trùng
     co_thanh_cong, loai_thong_bao, thong_bao = them_thuoc_tinh(data.thuoc_tinh, state[KhoaSession.TAP_THUOC_TINH])
@@ -68,7 +54,7 @@ def route_them_thuoc_tinh(data: ThuocTinh, request: Request):
 
 @router.post("/xoa-thuoc-tinh", response_model=PhanHoi[DeBaiTimBaoDongTapThuocTinh])
 def route_xoa_thuoc_tinh(data: ThuocTinh, request: Request):
-    state = get_session(request)
+    state = lay_bao_dong_tap_thuoc_tinh_session(request)
 
     co_thanh_cong, loai_thong_bao, thong_bao = xoa_thuoc_tinh(
         data.thuoc_tinh,
@@ -107,7 +93,7 @@ def route_xoa_thuoc_tinh(data: ThuocTinh, request: Request):
 
 @router.post("/xoa-trong-thuoc-tinh", response_model=PhanHoi[DeBaiTimBaoDongTapThuocTinh])
 def route_xoa_trong_thuoc_tinh(request: Request):
-    state = get_session(request)
+    state = lay_bao_dong_tap_thuoc_tinh_session(request)
 
     co_thanh_cong, loai_thong_bao, thong_bao = xoa_trong_tap_thuoc_tinh(
         state[KhoaSession.TAP_THUOC_TINH],
@@ -146,7 +132,7 @@ def route_xoa_trong_thuoc_tinh(request: Request):
 # ====================<< TẬP PHỤ THUỘC HÀM F >>====================
 @router.post("/them-phu-thuoc-ham", response_model=PhanHoi[DeBaiTimBaoDongTapThuocTinh])
 def route_them_phu_thuoc_ham(data: PhuThuocHam, request: Request):
-    state = get_session(request)
+    state = lay_bao_dong_tap_thuoc_tinh_session(request)
 
     # Gọi trực tiếp action thêm phụ thuộc hàm, truyền thẳng vế trái và vế phải thô vào
     co_thanh_cong, loai_thong_bao, thong_bao = them_phu_thuoc_ham(
@@ -171,8 +157,6 @@ def route_them_phu_thuoc_ham(data: PhuThuocHam, request: Request):
         KhoaSession.TAP_THUOC_TINH_CAN_TIM: list(state[KhoaSession.TAP_THUOC_TINH_CAN_TIM])
     }
 
-    print(state[KhoaSession.TAP_PHU_THUOC_HAM])
-
     return PhanHoi(
         doi_tuong=DeBaiTimBaoDongTapThuocTinh(
             tap_thuoc_tinh=state[KhoaSession.TAP_THUOC_TINH],
@@ -188,7 +172,7 @@ def route_them_phu_thuoc_ham(data: PhuThuocHam, request: Request):
 
 @router.post("/xoa-phu-thuoc-ham", response_model=PhanHoi[DeBaiTimBaoDongTapThuocTinh])
 def route_xoa_phu_thuoc_ham(data: PhuThuocHam, request: Request):
-    state = get_session(request)
+    state = lay_bao_dong_tap_thuoc_tinh_session(request)
 
     co_thanh_cong, loai_thong_bao, thong_bao = xoa_phu_thuoc_ham(
         data.ve_trai,
@@ -226,7 +210,7 @@ def route_xoa_phu_thuoc_ham(data: PhuThuocHam, request: Request):
 
 @router.post("/xoa-trong-phu-thuoc-ham", response_model=PhanHoi[DeBaiTimBaoDongTapThuocTinh])
 def route_xoa_trong_phu_thuoc_ham(request: Request):
-    state = get_session(request)
+    state = lay_bao_dong_tap_thuoc_tinh_session(request)
 
     co_thanh_cong, loai_thong_bao, thong_bao = xoa_trong_tap_phu_thuoc_ham(
         state[KhoaSession.TAP_PHU_THUOC_HAM]
@@ -254,7 +238,7 @@ def route_xoa_trong_phu_thuoc_ham(request: Request):
 # ====================<< TẬP THUỘC TÍNH CẦN TÌM X >>====================
 @router.post("/them-thuoc-tinh-can-tim", response_model=PhanHoi[DeBaiTimBaoDongTapThuocTinh])
 def route_them_thuoc_tinh(data: ThuocTinh, request: Request):
-    state = get_session(request)
+    state = lay_bao_dong_tap_thuoc_tinh_session(request)
 
     # Gọi trực tiếp action để xử lý. Action tự chuẩn hóa, tự check lỗi định dạng và check trùng
     co_thanh_cong, loai_thong_bao, thong_bao = them_thuoc_tinh_can_tim(
@@ -295,7 +279,7 @@ def route_them_thuoc_tinh(data: ThuocTinh, request: Request):
 
 @router.post("/xoa-thuoc-tinh-can-tim", response_model=PhanHoi[DeBaiTimBaoDongTapThuocTinh])
 def route_xoa_thuoc_tinh(data: ThuocTinh, request: Request):
-    state = get_session(request)
+    state = lay_bao_dong_tap_thuoc_tinh_session(request)
 
     co_thanh_cong, loai_thong_bao, thong_bao = xoa_thuoc_tinh_can_tim(
         data.thuoc_tinh,
@@ -332,7 +316,7 @@ def route_xoa_thuoc_tinh(data: ThuocTinh, request: Request):
 
 @router.post("/xoa-trong-thuoc-tinh-can-tim", response_model=PhanHoi[DeBaiTimBaoDongTapThuocTinh])
 def route_xoa_trong_thuoc_tinh(request: Request):
-    state = get_session(request)
+    state = lay_bao_dong_tap_thuoc_tinh_session(request)
 
     co_thanh_cong, loai_thong_bao, thong_bao = xoa_trong_tap_thuoc_tinh_can_tim(
         state[KhoaSession.TAP_THUOC_TINH_CAN_TIM]

@@ -30,6 +30,9 @@ class ThuocTinh(BaseModel):
 class TapThuocTinh(BaseModel):
     tap_thuoc_tinh: List[str]
 
+class DangChuan(BaseModel):
+    dang_chuan: str
+
 # Định dạng dữ liệu trả về cho React (Gồm danh sách thuộc tính R và tập F hiện tại)
 class DeBaiTimBaoDongTapThuocTinh(BaseModel):
     tap_thuoc_tinh: list[str] = Field(
@@ -46,6 +49,37 @@ class DeBaiTimBaoDongTapThuocTinh(BaseModel):
         default_factory=list,
         description="Tập thuộc tính cần tìm bao đóng X"
     )
+
+class DeBaiTimBaoDongTapPhuThuocHam(BaseModel):
+    tap_phu_thuoc_ham: list[PhuThuocHam] = Field(
+        default_factory=list,
+        description="Tập phụ thuộc hàm F"
+    )
+
+class DeBaiTimKhoaUngVien(BaseModel):
+    tap_thuoc_tinh: list[str] = Field(
+        default_factory=list,
+        description="Danh sách các thuộc tính trong R"
+    )
+
+    tap_phu_thuoc_ham: list[PhuThuocHam] = Field(
+        default_factory=list,
+        description="Tập phụ thuộc hàm F"
+    )
+
+class DeBaiNangDangChuan(BaseModel):
+    tap_thuoc_tinh: list[str] = Field(
+        default_factory=list,
+        description="Danh sách các thuộc tính trong R"
+    )
+
+    tap_phu_thuoc_ham: list[PhuThuocHam] = Field(
+        default_factory=list,
+        description="Tập phụ thuộc hàm F"
+    )
+
+    dang_chuan: str
+
 
 # ==========================================
 # 2. BỘ NHỚ TẠM LƯU TRỮ TRẠNG THÁI (IN-MEMORY STATE)
