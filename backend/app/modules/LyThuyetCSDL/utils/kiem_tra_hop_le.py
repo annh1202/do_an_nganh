@@ -1,96 +1,36 @@
-from backend.app.modules.LyThuyetCSDL.utils.normalizers import normalize_attrs, normalize_attr
+from backend.app.modules.LyThuyetCSDL.utils.chuan_hoa import chuan_hoa_tap_thuoc_tinh, chuan_hoa_thuoc_tinh
 
 
 # ====================<< CHECK ATTRIBUTE >>====================
-def is_attribute(attribute):
-    """
-    Kiểm tra một chuỗi đầu vào có tuân thủ định dạng của một thuộc tính đơn lẻ hay không.
-    Một thuộc tính hợp lệ phải là một ký tự chữ cái duy nhất thuộc bảng chữ cái tiếng Anh.
-
-    Args:
-        attribute (str): Chuỗi ký tự cần kiểm tra.
-
-    Returns:
-        bool: True nếu chuỗi là một thuộc tính hợp lệ, ngược lại trả về False.
-    """
-    if not attribute:
+def co_phai_thuoc_tinh_hop_le(thuoc_tinh):
+    if not thuoc_tinh:
         return False
-    attribute = attribute.strip()
-    return len(attribute) == 1 and attribute.isalpha() and attribute.isascii()
+    thuoc_tinh = thuoc_tinh.strip()
+    return len(thuoc_tinh) == 1 and thuoc_tinh.isalpha() and thuoc_tinh.isascii()
 
-def is_attribute_used(attribute, fds):
-    """
-    Kiểm tra xem một thuộc tính cụ thể có xuất hiện trong tập phụ thuộc hàm hay không.
 
-    Args:
-        attribute (str): Thuộc tính cần kiểm tra sự tồn tại.
-        fds (list): Danh sách các phụ thuộc hàm đã chuẩn hóa dưới dạng cặp (lhs, rhs).
-
-    Returns:
-        bool: True nếu thuộc tính có tham gia vào ít nhất một phụ thuộc hàm, ngược lại trả về False.
-    """
-    for lhs, rhs in fds:
-        if attribute in lhs or attribute in rhs:
+def thuoc_tinh_co_trong_phu_thuoc_ham(thuoc_tinh, tap_phu_thuoc_ham):
+    for ve_trai, ve_phai in tap_phu_thuoc_ham:
+        if thuoc_tinh in ve_trai or thuoc_tinh in ve_phai:
             return True
     return False
 
 # ====================<< CHECK FUNCTIONAL DEPENDENCY >>====================
-def is_trivial_fd(left, right):
-    """
-    Kiểm tra một phụ thuộc hàm có phải là phụ thuộc hiển nhiên hay không.
+def co_phai_phu_thuoc_ham_hien_nhien(thuoc_tinh_ve_trai, thuoc_tinh_ve_phai):
+    ve_trai = chuan_hoa_tap_thuoc_tinh(thuoc_tinh_ve_trai)
+    ve_phai = chuan_hoa_tap_thuoc_tinh(thuoc_tinh_ve_phai)
 
-    Một phụ thuộc hàm X → Y được gọi là hiển nhiên nếu: Y ⊆ X
+    return ve_phai.issubset(ve_trai)
 
-    Args:
-        left (iterable | str): Tập thuộc tính vế trái.
-        right (iterable | str): Tập thuộc tính vế phải.
 
-    Returns:
-        bool:
-            - True nếu là phụ thuộc hàm hiển nhiên.
-            - False nếu không phải.
-    """
-    lhs = normalize_attrs(left)
-    rhs = normalize_attrs(right)
-
-    return rhs.issubset(lhs)
-
-def is_valid_fd(left, right, attributes):
-    """
-    Kiểm tra phụ thuộc hàm có hợp lệ với tập thuộc tính của quan hệ hay không.
-
-    Một phụ thuộc hàm X → Y hợp lệ nếu mọi thuộc tính trong X và Y
-    đều thuộc tập thuộc tính R của quan hệ.
-
-    Args:
-        left (set): Tập thuộc tính vế trái.
-        right (set): Tập thuộc tính vế phải.
-        attributes (iterable): Tập thuộc tính của quan hệ.
-
-    Returns:
-        bool:
-            - True nếu mọi thuộc tính trong phụ thuộc hàm đều thuộc R.
-            - False nếu tồn tại thuộc tính không thuộc R.
-    """
-    attrs = set(attributes)
-    if left.issubset(attrs) and right.issubset(attrs):
+def co_phai_phu_thuoc_ham_hop_le(ve_trai, ve_phai, tap_thuoc_tinh):
+    tap_hop_thuoc_tinh = set(tap_thuoc_tinh)
+    if ve_trai.issubset(tap_hop_thuoc_tinh) and ve_phai.issubset(tap_hop_thuoc_tinh):
         return True
     return False
 
 # ====================<< VALIDATE COMMON STRUCTURE >>====================
 def validate_common_fields(data):
-    """
-    Kiểm tra các trường cấu trúc chung bắt buộc xuất hiện trong mọi tệp tin cấu hình bài toán
-    bao gồm trường 'attributes' và trường 'fds'.
-
-    Args:
-        data (dict): Dữ liệu lược đồ đọc từ tệp tin JSON.
-
-    Returns:
-        tuple: Bộ đôi giá trị bao gồm:
-            - bool: Trạng thái hợp lệ của cấu trúc chung (True/False).
-            - str: Thông báo lỗi chi tiết nếu phát hiện sai sót, hoặc "OK" nếu hợp lệ.
-    """
     # attributes
     attributes = data.get("attributes")
 

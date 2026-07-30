@@ -6,16 +6,16 @@ import ChonDangChuan from '../components/ChonDangChuan';
 import { TaoTapThuocTinh } from "../actions/TaoTapThuocTinh";
 import { TaoTapPhuThuocHam } from "../actions/TaoTapPhuThuocHam";
 import { ChonDangChuanAction } from "../actions/ChonDangChuan";
-import { StateActions } from "../actions/StateDangChuan";
 
 import TapThuocTinhApi from "../api/TapThuocTinh"
 import TapPhuThuocHamApi from "../api/TapPhuThuocHam"
 import DangChuanApi from "../api/DangChuan"
+import TrangThaiApi from "../api/TrangThai";
 
 
 const DangChuan = () => {
-    const [tap_thuoc_tinh, setTapThuocTinh] = useState([]);
-    const [tap_phu_thuoc_ham, setTapPhuThuocHam] = useState([]);
+    const [tapThuocTinh, setTapThuocTinh] = useState([]);
+    const [tapPhuThuocHam, setTapPhuThuocHam] = useState([]);
     const [dangChuan, setDangChuan] = useState("");
 
     const [loadingThuocTinh, setLoadingThuocTinh] = useState(false);
@@ -55,29 +55,35 @@ const DangChuan = () => {
         setThongBao: setThongBaoDangChuan,
     });
 
-    const stateActions = StateActions({
-        setTapThuocTinh,
-        setTapPhuThuocHam,
-        setDangChuan
-    });
-
     useEffect(() => {
-        stateActions.fetchState();
+        const fetchState = async () => {
+            try {
+                const response = await TrangThaiApi.fetchTrangThaiDangChuan();
+                const doiTuong = response.data.doi_tuong;
+                setTapThuocTinh(doiTuong.tap_thuoc_tinh);
+                setTapPhuThuocHam(doiTuong.tap_phu_thuoc_ham);
+                setDangChuan(doiTuong.dang_chuan)
+            } catch (err) {
+                console.error("Lỗi khi lấy state:",err);
+            }
+        };
+
+        fetchState();
     }, []);
 
   return (
     <div className="container py-3">
       <h2 className="text-center mb-4 fw-bold text-dark">Nâng dạng chuẩn</h2>
       <TapThuocTinh
-        tap_thuoc_tinh={tap_thuoc_tinh}
+        tapThuocTinh={tapThuocTinh}
         actions={thuocTinhActions}
-        thong_bao={thongBaoThuocTinh}
+        thongBao={thongBaoThuocTinh}
         onCloseThongBao={() => setThongBaoThuocTinh(null)}
       />
       <TapPhuThuocHam
-        tap_phu_thuoc_ham={tap_phu_thuoc_ham}
+        tapPhuThuocHam={tapPhuThuocHam}
         actions={phuThuocHamActions}
-        thong_bao={thongBaoPhuThuocHam}
+        thongBao={thongBaoPhuThuocHam}
         onCloseThongBao={() => setThongBaoPhuThuocHam(null)}
       />
 
@@ -85,7 +91,7 @@ const DangChuan = () => {
         dangChuan={dangChuan}
         setDangChuan={setDangChuan}
         actions={dangChuanActions}
-        thong_bao={thongBaoDangChuan}
+        thongBao={thongBaoDangChuan}
         onCloseThongBao={() => setThongBaoDangChuan(null)}
       />
 

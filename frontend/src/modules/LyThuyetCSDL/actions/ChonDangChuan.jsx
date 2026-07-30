@@ -4,9 +4,9 @@ export const ChonDangChuanAction = ({
     setThongBao,
 }) => {
     return {
-        async chonDangChuan(dang_chuan_duoc_chon) {
+        async chonDangChuan(dangChuanDuocChon) {
             try {
-                const response = await api.chonDangChuan(dang_chuan_duoc_chon);
+                const response = await api.chonDangChuan(dangChuanDuocChon);
                 setDangChuan(response.data.doi_tuong.dang_chuan)
                 setThongBao({
                     loai_thong_bao: response.data.loai_thong_bao,

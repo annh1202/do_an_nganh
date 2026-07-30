@@ -1,23 +1,23 @@
 import api from "./CauHinh";
 
 const TapPhuThuocHamApi = (prefix) => ({
-    fetchData: () =>
-        api.get("/state"),
+  fetchData: () =>
+    api.get("/trang-thai"),
 
-    them: ({ ve_trai, ve_phai }) =>
-        api.post(`${prefix}/them-phu-thuoc-ham`, {
-            ve_trai,
-            ve_phai,
-        }),
+  them: ({ veTrai, vePhai }) =>
+    api.post(`${prefix}/them-phu-thuoc-ham`, {
+      ve_trai: veTrai,
+      ve_phai: vePhai,
+    }),
 
-    xoa: ({ ve_trai, ve_phai }) =>
-        api.post(`${prefix}/xoa-phu-thuoc-ham`, {
-            ve_trai,
-            ve_phai,
-        }),
+  xoa: ({ veTrai, vePhai }) =>
+    api.post(`${prefix}/xoa-phu-thuoc-ham`, {
+      ve_trai: veTrai,
+      ve_phai: vePhai,
+    }),
 
-    xoaTrong: () =>
-        api.post(`${prefix}/xoa-trong-phu-thuoc-ham`),
+  xoaTrong: () =>
+    api.post(`${prefix}/xoa-trong-phu-thuoc-ham`),
 });
 
 export default TapPhuThuocHamApi;

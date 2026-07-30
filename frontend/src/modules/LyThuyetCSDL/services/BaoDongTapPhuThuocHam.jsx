@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import TapPhuThuocHam from '../components/TapPhuThuocHam';
+
 import { TaoTapPhuThuocHam } from "../actions/TaoTapPhuThuocHam";
+
 import TapPhuThuocHamApi from "../api/TapPhuThuocHam"
-import { StateActions } from "../actions/StateBaoDongTapPhuThuocHam";
+import TrangThaiApi from "../api/TrangThai";
+
 
 const BaoDongTapPhuThuocHam = () => {
-    const [tap_phu_thuoc_ham, setTapPhuThuocHam] = useState([]);
+    const [tapPhuThuocHam, setTapPhuThuocHam] = useState([]);
 
     const [loadingPhuThuocHam, setLoadingPhuThuocHam] = useState(false);
 
@@ -22,12 +25,18 @@ const BaoDongTapPhuThuocHam = () => {
         setThongBao: setThongBaoPhuThuocHam,
     });
 
-    const stateActions = StateActions({
-        setTapPhuThuocHam
-    });
-
     useEffect(() => {
-        stateActions.fetchState();
+        const fetchState = async () => {
+            try {
+                const response = await TrangThaiApi.fetchTrangThaiBaoDongTapPhuThuocHam();
+                const doiTuong = response.data.doi_tuong;
+                setTapPhuThuocHam(doiTuong.tap_phu_thuoc_ham);
+            } catch (err) {
+                console.error("Lỗi khi lấy state:",err);
+            }
+        };
+
+        fetchState();
     }, []);
 
   return (
@@ -35,9 +44,9 @@ const BaoDongTapPhuThuocHam = () => {
       <h2 className="text-center mb-4 fw-bold text-dark">Tìm bao đóng tập phụ thuộc hàm</h2>
 
       <TapPhuThuocHam
-        tap_phu_thuoc_ham={tap_phu_thuoc_ham}
+        tapPhuThuocHam={tapPhuThuocHam}
         actions={phuThuocHamActions}
-        thong_bao={thongBaoPhuThuocHam}
+        thongBao={thongBaoPhuThuocHam}
         onCloseThongBao={() => setThongBaoPhuThuocHam(null)}
       />
 

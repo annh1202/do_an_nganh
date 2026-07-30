@@ -1,14 +1,14 @@
 import React from "react";
 
-const ThongBao = ({ thong_bao, onClose }) => {
-  if (!thong_bao) return null;
+const ThongBao = ({ thongBao, onClose }) => {
+  if (!thongBao) return null;
 
   return (
     <div
-      className={`alert alert-${thong_bao.loai_thong_bao} alert-dismissible fade show`}
+      className={`alert alert-${thongBao.loai_thong_bao} alert-dismissible fade show`}
       role="alert"
     >
-      {thong_bao.noi_dung}
+      {thongBao.noi_dung}
 
       <button
         type="button"

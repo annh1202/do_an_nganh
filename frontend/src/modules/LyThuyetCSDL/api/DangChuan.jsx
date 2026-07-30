@@ -1,9 +1,9 @@
 import api from "./CauHinh";
 
 const DangChuanApi = (prefix) => ({
-    chonDangChuan: (dang_chuan) =>
+    chonDangChuan: (dangChuan) =>
         api.post(`${prefix}/chon-dang-chuan`, {
-            dang_chuan
+            dang_chuan: dangChuan,
         }),
 });
 

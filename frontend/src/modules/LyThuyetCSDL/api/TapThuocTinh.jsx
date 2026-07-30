@@ -1,21 +1,21 @@
 import api from "./CauHinh";
 
 const TapThuocTinhApi = (prefix) => ({
-    fetchData: () =>
-        api.get("/state"),
+  fetchData: () =>
+    api.get("/trang-thai"),
 
-    them: (thuoc_tinh) =>
-        api.post(`${prefix}/them-thuoc-tinh`, {
-            thuoc_tinh,
-        }),
+  them: (thuocTinh) =>
+    api.post(`${prefix}/them-thuoc-tinh`, {
+      thuoc_tinh: thuocTinh,
+    }),
 
-    xoa: (thuoc_tinh) =>
-        api.post(`${prefix}/xoa-thuoc-tinh`, {
-            thuoc_tinh,
-        }),
+  xoa: (thuocTinh) =>
+    api.post(`${prefix}/xoa-thuoc-tinh`, {
+      thuoc_tinh: thuocTinh,
+    }),
 
-    xoaTrong: () =>
-        api.post(`${prefix}/xoa-trong-thuoc-tinh`)
+  xoaTrong: () =>
+    api.post(`${prefix}/xoa-trong-thuoc-tinh`),
 });
 
 export default TapThuocTinhApi;

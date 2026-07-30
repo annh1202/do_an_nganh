@@ -7,11 +7,11 @@ import { TaoTapPhuThuocHam } from "../actions/TaoTapPhuThuocHam";
 
 import TapThuocTinhApi from "../api/TapThuocTinh"
 import TapPhuThuocHamApi from "../api/TapPhuThuocHam"
-import { StateActions } from "../actions/StateKhoaUngVien";
+import TrangThaiApi from "../api/TrangThai";
 
 const BaoDongTapThuocTinh = () => {
-    const [tap_thuoc_tinh, setTapThuocTinh] = useState([]);
-    const [tap_phu_thuoc_ham, setTapPhuThuocHam] = useState([]);
+    const [tapThuocTinh, setTapThuocTinh] = useState([]);
+    const [tapPhuThuocHam, setTapPhuThuocHam] = useState([]);
 
     const [loadingThuocTinh, setLoadingThuocTinh] = useState(false);
     const [loadingPhuThuocHam, setLoadingPhuThuocHam] = useState(false);
@@ -41,28 +41,34 @@ const BaoDongTapThuocTinh = () => {
         setThongBao: setThongBaoPhuThuocHam,
     });
 
-    const stateActions = StateActions({
-        setTapThuocTinh,
-        setTapPhuThuocHam
-    });
-
     useEffect(() => {
-        stateActions.fetchState();
+        const fetchState = async () => {
+            try {
+                const response = await TrangThaiApi.fetchTrangThaiKhoaUngVien();
+                const doi_tuong = response.data.doi_tuong;
+                setTapThuocTinh(doi_tuong.tap_thuoc_tinh);
+                setTapPhuThuocHam(doi_tuong.tap_phu_thuoc_ham);
+            } catch (err) {
+                console.error("Lỗi khi lấy state:",err);
+            }
+        };
+
+        fetchState();
     }, []);
 
   return (
     <div className="container py-3">
       <h2 className="text-center mb-4 fw-bold text-dark">Tìm khóa ứng viên</h2>
       <TapThuocTinh
-        tap_thuoc_tinh={tap_thuoc_tinh}
+        tapThuocTinh={tapThuocTinh}
         actions={thuocTinhActions}
-        thong_bao={thongBaoThuocTinh}
+        thongBao={thongBaoThuocTinh}
         onCloseThongBao={() => setThongBaoThuocTinh(null)}
       />
       <TapPhuThuocHam
-        tap_phu_thuoc_ham={tap_phu_thuoc_ham}
+        tapPhuThuocHam={tapPhuThuocHam}
         actions={phuThuocHamActions}
-        thong_bao={thongBaoPhuThuocHam}
+        thongBao={thongBaoPhuThuocHam}
         onCloseThongBao={() => setThongBaoPhuThuocHam(null)}
       />
 
