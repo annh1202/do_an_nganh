@@ -1,16 +1,20 @@
 from backend.app.modules.LyThuyetCSDL.schemas import PhuThuocHam
 
 
-# ====================<< NORMALIZE ATTRIBUTES >>====================
-def chuan_hoa_thuoc_tinh(thuoc_tinh_tho):
-    return thuoc_tinh_tho.strip().upper()
+# ===========================================
+# CHUẨN HÓA TẬP THUỘC TÍNH
+# ===========================================
+def chuan_hoa_thuoc_tinh(thuoc_tinh):
+    return thuoc_tinh.strip().upper()
 
 
-def chuan_hoa_tap_thuoc_tinh(tap_thuoc_tinh_tho):
-    return set(chuan_hoa_thuoc_tinh(thuoc_tinh_tho) for thuoc_tinh_tho in tap_thuoc_tinh_tho)
+def chuan_hoa_tap_thuoc_tinh(tap_thuoc_tinh):
+    return set(chuan_hoa_thuoc_tinh(thuoc_tinh) for thuoc_tinh in tap_thuoc_tinh)
 
 
-# ====================<< NORMALIZE FDS >>====================
+# ===========================================
+# CHUẨN HÓA TẬP PHỤ THUỘC HÀM
+# ===========================================
 def chuyen_tap_phu_thuoc_ham_sang_dang_class(tap_phu_thuoc_ham):
     ket_qua = []
 
@@ -33,8 +37,8 @@ def chuan_hoa_phu_thuoc_ham_sang_tuple(phu_thuoc_ham_dang_string):
     else:
         return None
 
-    tap_hop_thuoc_tinh_ve_trai = frozenset(ve_trai.replace(" ", "").upper())
-    tap_hop_thuoc_tinh_ve_phai = frozenset(ve_phai.replace(" ", "").upper())
+    tap_hop_thuoc_tinh_ve_trai = set(ve_trai.replace(" ", "").upper())
+    tap_hop_thuoc_tinh_ve_phai = set(ve_phai.replace(" ", "").upper())
 
     return tap_hop_thuoc_tinh_ve_trai, tap_hop_thuoc_tinh_ve_phai
 
@@ -49,3 +53,5 @@ def chuan_hoa_tap_phu_thuoc_ham_sang_tuple(tap_phu_thuoc_ham_tho):
 
 def chuan_hoa_mot_ve_phu_thuoc_ham(cac_thuoc_tinh):
     return frozenset(chuan_hoa_thuoc_tinh(thuoc_tinh) for thuoc_tinh in cac_thuoc_tinh)
+
+

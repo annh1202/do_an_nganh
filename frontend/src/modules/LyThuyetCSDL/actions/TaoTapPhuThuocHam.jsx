@@ -5,11 +5,14 @@ export const TaoTapPhuThuocHam = ({
     setThongBao,
 }) => {
 
-    const hienThongBaoLoi = (err) => {
-        if (err.response?.data?.detail) {
+    const hienThongBaoLoi = (loi) => {
+        // Axios
+        const detail = loi.response?.data?.detail;
+
+        if (detail && detail.thong_bao) {
             setThongBao({
-                loai_thong_bao: err.response.data.detail.loai_thong_bao,
-                noi_dung: err.response.data.detail.thong_bao,
+                loai_thong_bao: detail.loai_thong_bao || "danger",
+                noi_dung: detail.thong_bao,
             });
         } else {
             setThongBao({
@@ -20,14 +23,14 @@ export const TaoTapPhuThuocHam = ({
     };
 
 
-    const capNhatDuLieu = (response) => {
+    const capNhatDuLieu = (phanHoi) => {
         setTapPhuThuocHam(
-            response.data.doi_tuong.tap_phu_thuoc_ham
+            phanHoi.data.doi_tuong.tap_phu_thuoc_ham
         );
 
         setThongBao({
-            loai_thong_bao: response.data.loai_thong_bao,
-            noi_dung: response.data.thong_bao,
+            loai_thong_bao: phanHoi.data.loai_thong_bao,
+            noi_dung: phanHoi.data.thong_bao,
         });
     };
 
@@ -38,10 +41,10 @@ export const TaoTapPhuThuocHam = ({
             try {
                 setLoading(true);
 
-                const response = await api.fetchData();
+                const phanHoi = await api.fetchData();
 
                 setTapPhuThuocHam(
-                    response.data.doi_tuong.tap_phu_thuoc_ham
+                    phanHoi.data.doi_tuong.tap_phu_thuoc_ham
                 );
 
                 setThongBao(null);
@@ -61,8 +64,8 @@ export const TaoTapPhuThuocHam = ({
 
         async them(value) {
             try {
-                const response = await api.them(value);
-                capNhatDuLieu(response);
+                const phanHoi = await api.them(value);
+                capNhatDuLieu(phanHoi);
 
             } catch(err) {
                 hienThongBaoLoi(err);
@@ -72,8 +75,8 @@ export const TaoTapPhuThuocHam = ({
 
         async xoa(value) {
             try {
-                const response = await api.xoa(value);
-                capNhatDuLieu(response);
+                const phanHoi = await api.xoa(value);
+                capNhatDuLieu(phanHoi);
 
             } catch(err) {
                 hienThongBaoLoi(err);
@@ -83,8 +86,8 @@ export const TaoTapPhuThuocHam = ({
 
         async xoaTrong() {
             try {
-                const response = await api.xoaTrong();
-                capNhatDuLieu(response);
+                const phanHoi = await api.xoaTrong();
+                capNhatDuLieu(phanHoi);
 
             } catch(err) {
                 hienThongBaoLoi(err);

@@ -6,8 +6,24 @@ class KhoaSession:
     BAO_DONG_TAP_PHU_THUOC_HAM = "bao_dong_tap_phu_thuoc_ham"
     KHOA_UNG_VIEN = "khoa_ung_vien"
     DANG_CHUAN = "dang_chuan"
+    DANH_SACH_DANG_CHUAN = "danh_sach_dang_chuan"
 
 class LoaiThongBao:
-    SUCCESS = "success"
-    WARNING = "warning"
-    DANGER = "danger"
+    THANH_CONG = "success"
+    CANH_BAO = "warning"
+    NGUY_HIEM = "danger"
+
+DANH_SACH_DANG_CHUAN = [
+    {
+        "value": "2NF",
+        "label": "2NF - Dạng chuẩn 2",
+    },
+    {
+        "value": "3NF",
+        "label": "3NF - Dạng chuẩn 3",
+    },
+    {
+        "value": "BCNF",
+        "label": "BCNF - Dạng chuẩn Boyce-Codd",
+    },
+]

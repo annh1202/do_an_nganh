@@ -5,11 +5,14 @@ export const TaoTapThuocTinh = ({
     setThongBao,
 }) => {
 
-    const hienThongBaoLoi = (err) => {
-        if (err.response?.data?.detail) {
+    const hienThongBaoLoi = (loi) => {
+        // Axios
+        const detail = loi.response?.data?.detail;
+
+        if (detail && detail.thong_bao) {
             setThongBao({
-                loai_thong_bao: err.response.data.detail.loai_thong_bao,
-                noi_dung: err.response.data.detail.thong_bao,
+                loai_thong_bao: detail.loai_thong_bao || "danger",
+                noi_dung: detail.thong_bao,
             });
         } else {
             setThongBao({
@@ -20,16 +23,16 @@ export const TaoTapThuocTinh = ({
     };
 
 
-    const capNhatDuLieu = (response) => {
-        console.log(response.data);
+    const capNhatDuLieu = (phanHoi) => {
+        console.log(phanHoi.data);
 
         setTapThuocTinh(
-            response.data.doi_tuong.tap_thuoc_tinh
+            phanHoi.data.doi_tuong.tap_thuoc_tinh
         );
 
         setThongBao({
-            loai_thong_bao: response.data.loai_thong_bao,
-            noi_dung: response.data.thong_bao,
+            loai_thong_bao: phanHoi.data.loai_thong_bao,
+            noi_dung: phanHoi.data.thong_bao,
         });
     };
 
@@ -40,16 +43,16 @@ export const TaoTapThuocTinh = ({
             try {
                 setLoading(true);
 
-                const response = await api.fetchData();
+                const phanHoi = await api.fetchData();
 
                 setTapThuocTinh(
-                    response.data.doi_tuong.tap_thuoc_tinh
+                    phanHoi.data.doi_tuong.tap_thuoc_tinh
                 );
 
                 setThongBao(null);
 
-            } catch(err) {
-                hienThongBaoLoi(err);
+            } catch(loi) {
+                hienThongBaoLoi(loi);
             }
             finally {
                 setLoading(false);
@@ -59,33 +62,33 @@ export const TaoTapThuocTinh = ({
 
         async them(value) {
             try {
-                const response = await api.them(value);
-                capNhatDuLieu(response);
+                const phanHoi = await api.them(value);
+                capNhatDuLieu(phanHoi);
             }
-            catch(err) {
-                hienThongBaoLoi(err);
+            catch(loi) {
+                hienThongBaoLoi(loi);
             }
         },
 
 
         async xoa(value) {
             try {
-                const response = await api.xoa(value);
-                capNhatDuLieu(response);
+                const phanHoi = await api.xoa(value);
+                capNhatDuLieu(phanHoi);
             }
-            catch(err) {
-                hienThongBaoLoi(err);
+            catch(loi) {
+                hienThongBaoLoi(loi);
             }
         },
 
 
         async xoaTrong() {
             try {
-                const response = await api.xoaTrong();
-                capNhatDuLieu(response);
+                const phanHoi = await api.xoaTrong();
+                capNhatDuLieu(phanHoi);
             }
-            catch(err) {
-                hienThongBaoLoi(err);
+            catch(loi) {
+                hienThongBaoLoi(loi);
             }
         }
     };

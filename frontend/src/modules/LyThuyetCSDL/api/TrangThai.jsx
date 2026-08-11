@@ -2,6 +2,9 @@ import api from "./CauHinh";
 
 const TrangThaiApi = {
 
+    fetchTrangThai: () =>
+        api.get("/trang-thai"),
+
     fetchTrangThaiBaoDongTapThuocTinh: () =>
         api.get("/bao-dong-tap-thuoc-tinh/trang-thai"),
 

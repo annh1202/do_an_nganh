@@ -1,6 +1,6 @@
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 # ===================================================
@@ -10,6 +10,7 @@ class ThuocTinh(BaseModel):
     thuoc_tinh: str
 
 class PhuThuocHam(BaseModel):
+    model_config = ConfigDict(extra="forbid") # Phải có đủ các trường
     ve_trai: str = Field(..., description="Vế trái của phụ thuộc hàm, ví dụ: AB")
     ve_phai: str = Field(..., description="Vế phải của phụ thuộc hàm, ví dụ: C")
 
@@ -22,11 +23,13 @@ class DangChuan(BaseModel):
 T = TypeVar("T")
 
 class PhanHoi(BaseModel, Generic[T]):
-    doi_tuong: T
+    doi_tuong: Optional[T] = None
     loai_thong_bao: str
     thong_bao: str
 
 class DeBaiTimBaoDongTapThuocTinh(BaseModel):
+    model_config = ConfigDict(extra="forbid") # Phải có đủ các trường
+
     tap_thuoc_tinh: list[str] = Field(
         default_factory=list,
         description="Danh sách các thuộc tính trong R"
@@ -72,4 +75,14 @@ class DeBaiNangDangChuan(BaseModel):
 
     dang_chuan: str
 
+    danh_sach_dang_chuan: list[dict]
 
+
+class BaiGiai(BaseModel):
+    ket_qua: str = Field(
+        description="Kết quả"
+    )
+    loi_giai: list[str] = Field(
+        default_factory=list,
+        description="Lời giải chi tiết"
+    )

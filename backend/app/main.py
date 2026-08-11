@@ -1,12 +1,12 @@
-import uvicorn
+from fastapi import FastAPI
+import os
+
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from backend.app.modules.LyThuyetCSDL.routes.trang_thai import router_tong as csdl_router
-from dotenv import load_dotenv
-import os
-
 
 load_dotenv()
 

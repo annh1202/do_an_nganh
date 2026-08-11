@@ -6,14 +6,14 @@ export const ChonDangChuanAction = ({
     return {
         async chonDangChuan(dangChuanDuocChon) {
             try {
-                const response = await api.chonDangChuan(dangChuanDuocChon);
-                setDangChuan(response.data.doi_tuong.dang_chuan)
+                const phanHoi = await api.chonDangChuan(dangChuanDuocChon);
+                setDangChuan(phanHoi.data.doi_tuong.dang_chuan)
                 setThongBao({
-                    loai_thong_bao: response.data.loai_thong_bao,
-                    noi_dung: response.data.thong_bao,
+                    loai_thong_bao: phanHoi.data.loai_thong_bao,
+                    noi_dung: phanHoi.data.thong_bao,
                 });
             } catch (err) {
-                setThongBao(err.response?.data?.detail);
+                setThongBao(err.phanHoi?.data?.detail);
             }
         }
     };

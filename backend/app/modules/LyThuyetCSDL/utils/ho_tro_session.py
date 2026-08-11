@@ -7,7 +7,6 @@ from backend.app.modules.LyThuyetCSDL.config import KhoaSession
 # BAO ĐÓNG TẬP THUỘC TÍNH
 # ==============================
 def lay_bao_dong_tap_thuoc_tinh_session(request: Request) -> dict:
-    """Khởi tạo session nếu user mới truy cập lần đầu"""
     if KhoaSession.BAO_DONG_TAP_THUOC_TINH not in request.session:
         request.session[KhoaSession.BAO_DONG_TAP_THUOC_TINH] = {
             KhoaSession.TAP_THUOC_TINH: [],

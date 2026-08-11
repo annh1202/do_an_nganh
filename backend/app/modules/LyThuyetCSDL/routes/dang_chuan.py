@@ -1,11 +1,18 @@
+import random
+
 from fastapi import APIRouter, HTTPException, Request
 
-from backend.app.modules.LyThuyetCSDL.config import KhoaSession, LoaiThongBao
+from backend.app.modules.LyThuyetCSDL.bai_giai.dang_chuan import phan_ra_sang_dang_chuan_2
+from backend.app.modules.LyThuyetCSDL.config import KhoaSession, LoaiThongBao, DANH_SACH_DANG_CHUAN
 from backend.app.modules.LyThuyetCSDL.schemas import PhuThuocHam, ThuocTinh, PhanHoi, \
-    DeBaiNangDangChuan, DangChuan
+    DeBaiNangDangChuan, DangChuan, BaiGiai
+from backend.app.modules.LyThuyetCSDL.utils.dinh_dang import dinh_dang_tap_phu_thuoc_ham_tuple, \
+    dinh_dang_tap_phu_thuoc_ham_object
 from backend.app.modules.LyThuyetCSDL.utils.ho_tro_phan_hoi import tao_phan_hoi_dang_chuan
 from backend.app.modules.LyThuyetCSDL.utils.ho_tro_session import lay_dang_chuan_session, \
     cap_nhat_dang_chuan_session
+from backend.app.modules.LyThuyetCSDL.utils.tao_ngau_nhien import tao_tap_thuoc_tinh_ngau_nhien, \
+    tao_tap_phu_thuoc_ham_ngau_nhien
 from backend.app.modules.LyThuyetCSDL.utils.them_xoa_sua import (
     them_thuoc_tinh, xoa_thuoc_tinh, xoa_trong_tap_thuoc_tinh,
     them_phu_thuoc_ham, xoa_phu_thuoc_ham, xoa_trong_tap_phu_thuoc_ham
@@ -14,7 +21,9 @@ from backend.app.modules.LyThuyetCSDL.utils.them_xoa_sua import (
 
 router = APIRouter(prefix="/dang-chuan", tags=["Dạng chuẩn"])
 
-# ====================<< TẬP THUỘC TÍNH R >>====================
+# ==========================================
+# TẬP THUỘC TÍNH R
+# ==========================================
 @router.post("/them-thuoc-tinh", response_model=PhanHoi[DeBaiNangDangChuan])
 def route_them_thuoc_tinh(data: ThuocTinh, request: Request):
     trang_thai = lay_dang_chuan_session(request)
@@ -87,7 +96,9 @@ def route_xoa_trong_thuoc_tinh(request: Request):
     return tao_phan_hoi_dang_chuan(trang_thai, loai_thong_bao, thong_bao)
 
 
-# ====================<< TẬP PHỤ THUỘC HÀM F >>====================
+# ==========================================
+# TẬP PHỤ THUỘC HÀM F
+# ==========================================
 @router.post("/them-phu-thuoc-ham", response_model=PhanHoi[DeBaiNangDangChuan])
 def route_them_phu_thuoc_ham(data: PhuThuocHam, request: Request):
     trang_thai = lay_dang_chuan_session(request)
@@ -150,15 +161,20 @@ def route_xoa_trong_phu_thuoc_ham(request: Request):
 
     return tao_phan_hoi_dang_chuan(trang_thai, loai_thong_bao, thong_bao)
 
-# ====================<< CHỌN DẠNG CHUẨN >>====================
+# ==========================================
+# CHỌN DẠNG CHUẨN
+# ==========================================
+dang_chuan_hop_le = {
+    item["value"]
+    for item in DANH_SACH_DANG_CHUAN
+}
+
 @router.post("/chon-dang-chuan", response_model=PhanHoi[DeBaiNangDangChuan])
 def route_chon_dang_chuan(data: DangChuan, request: Request):
-    dang_chuan_hop_le = {"2NF", "3NF", "BCNF"}
-
     trang_thai = lay_dang_chuan_session(request)
 
     if data.dang_chuan not in dang_chuan_hop_le:
-        return tao_phan_hoi_dang_chuan(trang_thai, LoaiThongBao.DANGER, "Dạng chuẩn không hợp lệ")
+        return tao_phan_hoi_dang_chuan(trang_thai, LoaiThongBao.NGUY_HIEM, "Dạng chuẩn không hợp lệ")
 
     trang_thai[KhoaSession.DANG_CHUAN] = data.dang_chuan
 
@@ -166,6 +182,97 @@ def route_chon_dang_chuan(data: DangChuan, request: Request):
 
     return tao_phan_hoi_dang_chuan(
         trang_thai,
-        LoaiThongBao.SUCCESS,
+        LoaiThongBao.THANH_CONG,
         "Chọn dạng chuẩn thành công"
+    )
+
+# ==========================================
+# CÁC CHỨC NĂNG CHÍNH
+# ==========================================
+@router.post("/tao-de-bai-ngau-nhien", response_model=PhanHoi[DeBaiNangDangChuan])
+def route_tai_de_len(request: Request):
+    tap_thuoc_tinh = tao_tap_thuoc_tinh_ngau_nhien(so_thuoc_tinh_toi_da=6)
+    tap_phu_thuoc_ham = tao_tap_phu_thuoc_ham_ngau_nhien(tap_thuoc_tinh)
+    dang_chuan = random.choice(list(dang_chuan_hop_le))
+
+    trang_thai = {
+        KhoaSession.TAP_THUOC_TINH: tap_thuoc_tinh,
+        KhoaSession.TAP_PHU_THUOC_HAM: dinh_dang_tap_phu_thuoc_ham_tuple(tap_phu_thuoc_ham),
+        KhoaSession.DANG_CHUAN: dang_chuan
+    }
+
+    cap_nhat_dang_chuan_session(request, trang_thai)
+
+    return tao_phan_hoi_dang_chuan(
+        trang_thai=trang_thai,
+        loai_thong_bao="success",
+        thong_bao="Tải đề bài lên hệ thống thành công!"
+    )
+
+@router.post("/tai-de-bai-len", response_model=PhanHoi[DeBaiNangDangChuan])
+def route_tai_de_len(data: DeBaiNangDangChuan, request: Request):
+    tap_phu_thuoc_ham = dinh_dang_tap_phu_thuoc_ham_object(
+        data.tap_phu_thuoc_ham
+    )
+
+    trang_thai = {
+        KhoaSession.TAP_THUOC_TINH: data.tap_thuoc_tinh,
+        KhoaSession.TAP_PHU_THUOC_HAM: tap_phu_thuoc_ham,
+        KhoaSession.DANG_CHUAN: data.dang_chuan
+    }
+
+    cap_nhat_dang_chuan_session(request, trang_thai)
+
+    return tao_phan_hoi_dang_chuan(
+        trang_thai=trang_thai,
+        loai_thong_bao="success",
+        thong_bao="Tải đề bài lên hệ thống thành công!"
+    )
+
+@router.post("/giai-de", response_model=PhanHoi[BaiGiai])
+def route_nang_dang_chuan(request: Request):
+    trang_thai = lay_dang_chuan_session(request)
+
+    tap_thuoc_tinh = trang_thai[KhoaSession.TAP_THUOC_TINH]
+    tap_phu_thuoc_ham = trang_thai[KhoaSession.TAP_PHU_THUOC_HAM]
+    dang_chuan = trang_thai[KhoaSession.DANG_CHUAN]
+
+    # Kiểm tra dữ liệu đầu vào
+    if not tap_thuoc_tinh:
+        return PhanHoi(
+            doi_tuong=None,
+            loai_thong_bao=LoaiThongBao.CANH_BAO,
+            thong_bao="Tập thuộc tính R không được để trống."
+        )
+
+    if not tap_phu_thuoc_ham:
+        return PhanHoi(
+            doi_tuong=None,
+            loai_thong_bao=LoaiThongBao.CANH_BAO,
+            thong_bao="Tập phụ thuộc hàm F không được để trống."
+        )
+
+    if not dang_chuan:
+        return PhanHoi(
+            doi_tuong=None,
+            loai_thong_bao=LoaiThongBao.CANH_BAO,
+            thong_bao="Dạng chuẩn không được để trống."
+        )
+
+    if dang_chuan == "2NF":
+        ket_qua, loi_giai = phan_ra_sang_dang_chuan_2(tap_thuoc_tinh, tap_phu_thuoc_ham)
+#     ket_qua, loi_giai = tinh_bao_dong_tap_thuoc_tinh(
+#         tap_thuoc_tinh_can_tim,
+#         tap_phu_thuoc_ham
+#     )
+#
+#     ket_qua = f"X⁺ = {{ {", ".join(sorted(ket_qua))} }}"
+#
+    return PhanHoi(
+        doi_tuong=BaiGiai(
+            ket_qua=ket_qua,
+            loi_giai=loi_giai
+        ),
+        loai_thong_bao=LoaiThongBao.THANH_CONG,
+        thong_bao="Tính toán bao đóng tập thuộc tính thành công."
     )
