@@ -26,6 +26,9 @@ class PhanHoi(BaseModel, Generic[T]):
     doi_tuong: Optional[T] = None
     loai_thong_bao: str
     thong_bao: str
+    cau_hinh: list = Field(
+        default_factory=list
+    )
 
 class DeBaiTimBaoDongTapThuocTinh(BaseModel):
     model_config = ConfigDict(extra="forbid") # Phải có đủ các trường
@@ -74,8 +77,6 @@ class DeBaiNangDangChuan(BaseModel):
     )
 
     dang_chuan: str
-
-    danh_sach_dang_chuan: list[dict]
 
 
 class BaiGiai(BaseModel):

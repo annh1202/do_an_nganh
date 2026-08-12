@@ -3,7 +3,7 @@ import ThongBao from "./ThongBao";
 
 const ChonDangChuan = ({
     dangChuan,
-    danhSachDangChuan,
+    danhSachDangChuan = [],
     actions,
     thongBao,
     onCloseThongBao,

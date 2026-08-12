@@ -64,9 +64,9 @@ def tao_phan_hoi_dang_chuan(trang_thai, loai_thong_bao, thong_bao):
             tap_phu_thuoc_ham=chuyen_tap_phu_thuoc_ham_sang_dang_class(
                 trang_thai[KhoaSession.TAP_PHU_THUOC_HAM]
             ),
-            dang_chuan=trang_thai[KhoaSession.DANG_CHUAN],
-            danh_sach_dang_chuan=DANH_SACH_DANG_CHUAN
+            dang_chuan=trang_thai[KhoaSession.DANG_CHUAN]
         ),
         loai_thong_bao=loai_thong_bao,
-        thong_bao=thong_bao
+        thong_bao=thong_bao,
+        cau_hinh=DANH_SACH_DANG_CHUAN
     )

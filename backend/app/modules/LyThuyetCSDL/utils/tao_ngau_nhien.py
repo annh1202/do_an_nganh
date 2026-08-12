@@ -1,6 +1,8 @@
 import random
 import string
 
+from backend.app.modules.LyThuyetCSDL.bai_giai.ho_tro import loai_bo_phu_thuoc_ham_du_thua
+
 
 def tao_tap_thuoc_tinh_ngau_nhien(so_thuoc_tinh_toi_thieu=5, so_thuoc_tinh_toi_da=7):
     kich_thuoc = random.randint(so_thuoc_tinh_toi_thieu, so_thuoc_tinh_toi_da)
@@ -33,7 +35,7 @@ def tao_tap_phu_thuoc_ham_ngau_nhien(tap_thuoc_tinh=None, so_luong_phu_thuoc_ham
 
         tap_phu_thuoc_ham.append((ve_trai, ve_phai))
 
-    return tap_phu_thuoc_ham
+    return loai_bo_phu_thuoc_ham_du_thua(tap_phu_thuoc_ham)
 
 
 def tao_tap_thuoc_tinh_can_tim_ngau_nhien(tap_thuoc_tinh, so_thuoc_tinh_toi_thieu=1, so_thuoc_tinh_toi_da=2):

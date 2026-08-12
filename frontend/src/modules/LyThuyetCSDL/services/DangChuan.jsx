@@ -317,7 +317,7 @@ const DangChuan = () => {
                 setTapThuocTinh(doiTuong.tap_thuoc_tinh);
                 setTapPhuThuocHam(doiTuong.tap_phu_thuoc_ham);
                 setDangChuan(doiTuong.dang_chuan);
-                setDanhSachDangChuan(doiTuong.danh_sach_dang_chuan);
+                setDanhSachDangChuan(phanHoi.data.cau_hinh);
             } catch (err) {
                 console.error("Lỗi khi lấy state:",err);
             }

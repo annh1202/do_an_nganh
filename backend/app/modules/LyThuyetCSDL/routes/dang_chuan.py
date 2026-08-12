@@ -2,7 +2,7 @@ import random
 
 from fastapi import APIRouter, HTTPException, Request
 
-from backend.app.modules.LyThuyetCSDL.bai_giai.dang_chuan import phan_ra_sang_dang_chuan_2
+from backend.app.modules.LyThuyetCSDL.bai_giai.dang_chuan import nang_dang_chuan_2
 from backend.app.modules.LyThuyetCSDL.config import KhoaSession, LoaiThongBao, DANH_SACH_DANG_CHUAN
 from backend.app.modules.LyThuyetCSDL.schemas import PhuThuocHam, ThuocTinh, PhanHoi, \
     DeBaiNangDangChuan, DangChuan, BaiGiai
@@ -191,7 +191,7 @@ def route_chon_dang_chuan(data: DangChuan, request: Request):
 # ==========================================
 @router.post("/tao-de-bai-ngau-nhien", response_model=PhanHoi[DeBaiNangDangChuan])
 def route_tai_de_len(request: Request):
-    tap_thuoc_tinh = tao_tap_thuoc_tinh_ngau_nhien(so_thuoc_tinh_toi_da=6)
+    tap_thuoc_tinh = tao_tap_thuoc_tinh_ngau_nhien(so_thuoc_tinh_toi_thieu=4, so_thuoc_tinh_toi_da=6)
     tap_phu_thuoc_ham = tao_tap_phu_thuoc_ham_ngau_nhien(tap_thuoc_tinh)
     dang_chuan = random.choice(list(dang_chuan_hop_le))
 
@@ -260,7 +260,7 @@ def route_nang_dang_chuan(request: Request):
         )
 
     if dang_chuan == "2NF":
-        ket_qua, loi_giai = phan_ra_sang_dang_chuan_2(tap_thuoc_tinh, tap_phu_thuoc_ham)
+        ket_qua, loi_giai = nang_dang_chuan_2(tap_thuoc_tinh, tap_phu_thuoc_ham)
 #     ket_qua, loi_giai = tinh_bao_dong_tap_thuoc_tinh(
 #         tap_thuoc_tinh_can_tim,
 #         tap_phu_thuoc_ham
