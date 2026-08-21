@@ -165,10 +165,16 @@ const GioiThieu = () => {
                     className="bg-dark text-warning p-4 rounded-3 shadow-sm m-0"
                     style={{fontSize: "0.95rem"}}
                 >{`{
-  "attributes": ["A", "B", "C"],
-  "fds": [
-    [["A"], ["B"]],
-    [["B"], ["C"]]
+  "tap_thuoc_tinh": ["A", "B", "C"],
+  "tap_phu_thuoc_ham": [
+    {
+      "ve_trai": "A",
+      "ve_phai": "B"
+    },
+    {
+      "ve_trai": "A",
+      "ve_phai": "C"
+    }
   ]
 }`}</pre>
             </div>

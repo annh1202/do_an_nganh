@@ -4,9 +4,12 @@ import os
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
 from starlette.middleware.sessions import SessionMiddleware
 
 from backend.app.modules.LyThuyetCSDL.routes.trang_thai import router_tong as csdl_router
+
 
 load_dotenv()
 
@@ -34,10 +37,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 2. Nhúng router tổng vào FastAPI instance
 app.include_router(csdl_router)
 
-# 3. Endpoint kiểm tra nhanh trạng thái server
+
 @app.get("/")
 def kiem_tra_he_thong():
     return {"status": "running", "message": "FastAPI đang hoạt động ổn định!"}

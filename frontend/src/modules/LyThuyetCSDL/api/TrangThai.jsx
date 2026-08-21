@@ -1,4 +1,4 @@
-import api from "./CauHinh";
+import api from "../../../CauHinh";
 
 const TrangThaiApi = {
 

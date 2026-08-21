@@ -2,7 +2,8 @@ import random
 
 from fastapi import APIRouter, HTTPException, Request
 
-from backend.app.modules.LyThuyetCSDL.bai_giai.dang_chuan import nang_dang_chuan_2
+from backend.app.modules.LyThuyetCSDL.bai_giai.dang_chuan import nang_dang_chuan_2, nang_dang_chuan_3, \
+    nang_dang_chuan_bcnf
 from backend.app.modules.LyThuyetCSDL.config import KhoaSession, LoaiThongBao, DANH_SACH_DANG_CHUAN
 from backend.app.modules.LyThuyetCSDL.schemas import PhuThuocHam, ThuocTinh, PhanHoi, \
     DeBaiNangDangChuan, DangChuan, BaiGiai
@@ -11,6 +12,7 @@ from backend.app.modules.LyThuyetCSDL.utils.dinh_dang import dinh_dang_tap_phu_t
 from backend.app.modules.LyThuyetCSDL.utils.ho_tro_phan_hoi import tao_phan_hoi_dang_chuan
 from backend.app.modules.LyThuyetCSDL.utils.ho_tro_session import lay_dang_chuan_session, \
     cap_nhat_dang_chuan_session
+from backend.app.modules.LyThuyetCSDL.utils.kiem_tra_hop_le import kiem_tra_file_dang_chuan
 from backend.app.modules.LyThuyetCSDL.utils.tao_ngau_nhien import tao_tap_thuoc_tinh_ngau_nhien, \
     tao_tap_phu_thuoc_ham_ngau_nhien
 from backend.app.modules.LyThuyetCSDL.utils.them_xoa_sua import (
@@ -211,6 +213,17 @@ def route_tai_de_len(request: Request):
 
 @router.post("/tai-de-bai-len", response_model=PhanHoi[DeBaiNangDangChuan])
 def route_tai_de_len(data: DeBaiNangDangChuan, request: Request):
+    du_lieu = data.model_dump()
+
+    hop_le, thong_bao = kiem_tra_file_dang_chuan(du_lieu)
+
+    if not hop_le:
+        return tao_phan_hoi_dang_chuan(
+            trang_thai=lay_dang_chuan_session(request),
+            loai_thong_bao="warning",
+            thong_bao=thong_bao
+        )
+
     tap_phu_thuoc_ham = dinh_dang_tap_phu_thuoc_ham_object(
         data.tap_phu_thuoc_ham
     )
@@ -261,18 +274,21 @@ def route_nang_dang_chuan(request: Request):
 
     if dang_chuan == "2NF":
         ket_qua, loi_giai = nang_dang_chuan_2(tap_thuoc_tinh, tap_phu_thuoc_ham)
-#     ket_qua, loi_giai = tinh_bao_dong_tap_thuoc_tinh(
-#         tap_thuoc_tinh_can_tim,
-#         tap_phu_thuoc_ham
-#     )
-#
-#     ket_qua = f"X⁺ = {{ {", ".join(sorted(ket_qua))} }}"
-#
+
+    elif dang_chuan == "3NF":
+        ket_qua, loi_giai = nang_dang_chuan_3(tap_thuoc_tinh, tap_phu_thuoc_ham)
+
+    elif dang_chuan == "BCNF":
+        ket_qua, loi_giai = nang_dang_chuan_bcnf(tap_thuoc_tinh, tap_phu_thuoc_ham)
+    else:
+        ket_qua = "Không có kết quả"
+        loi_giai = "Không có lời giải"
+
     return PhanHoi(
         doi_tuong=BaiGiai(
             ket_qua=ket_qua,
             loi_giai=loi_giai
         ),
         loai_thong_bao=LoaiThongBao.THANH_CONG,
-        thong_bao="Tính toán bao đóng tập thuộc tính thành công."
+        thong_bao="Tính toán dạng chuẩn thành công."
     )

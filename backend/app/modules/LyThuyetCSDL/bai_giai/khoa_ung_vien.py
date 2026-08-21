@@ -4,6 +4,7 @@
 from itertools import combinations
 
 from backend.app.modules.LyThuyetCSDL.bai_giai.bao_dong_tap_thuoc_tinh import tinh_bao_dong_tap_thuoc_tinh
+from backend.app.modules.LyThuyetCSDL.bai_giai.ho_tro import loc_phu_thuoc_ham, loai_bo_phu_thuoc_ham_du_thua
 from backend.app.modules.LyThuyetCSDL.utils.chuan_hoa import chuan_hoa_tap_phu_thuoc_ham_sang_tuple
 from backend.app.modules.LyThuyetCSDL.utils.dinh_dang import dinh_dang_tap_thuoc_tinh, dinh_dang_chuoi_tap_thuoc_tinh
 
@@ -74,7 +75,9 @@ def tim_khoa_ung_vien(tap_thuoc_tinh, tap_phu_thuoc_ham):
     tap_thuoc_tinh = set(tap_thuoc_tinh)
 
     tap_phu_thuoc_ham_dang_tuple = (
-        chuan_hoa_tap_phu_thuoc_ham_sang_tuple(tap_phu_thuoc_ham)
+        loai_bo_phu_thuoc_ham_du_thua(
+            chuan_hoa_tap_phu_thuoc_ham_sang_tuple(tap_phu_thuoc_ham)
+        )
     )
 
     # Phân loại thuộc tính
@@ -186,7 +189,7 @@ if __name__ == '__main__':
         "E → G"
     ]
 
-    # khoa_ung_vien, cac_buoc_giai = tim_khoa_ung_vien(tap_thuoc_tinh, tap_phu_thuoc_ham)
-    # print(khoa_ung_vien)
-    # for b in cac_buoc_giai:
-    #     print(b)
+    khoa_ung_vien, cac_buoc_giai = tim_khoa_ung_vien(tap_thuoc_tinh, tap_phu_thuoc_ham)
+    print(khoa_ung_vien)
+    for b in cac_buoc_giai:
+        print(b)

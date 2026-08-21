@@ -13,6 +13,29 @@ class LoaiThongBao:
     CANH_BAO = "warning"
     NGUY_HIEM = "danger"
 
+MODULE_LY_THUYET_CSDL = [
+    {
+        "id": "gioi-thieu",
+        "label": "1. Giới thiệu các chức năng"
+    },
+    {
+        "id": "bao-dong-tap-thuoc-tinh",
+        "label": "2. Tìm bao đóng tập thuộc tính"
+    },
+    {
+        "id": "bao-dong-tap-phu-thuoc-ham",
+        "label": "3. Tìm bao đóng tập phụ thuộc hàm"
+    },
+    {
+        "id": "khoa-ung-vien",
+        "label": "4. Tìm khóa ứng viên"
+    },
+    {
+        "id": "dang-chuan",
+        "label": "5. Nâng dạng chuẩn CSDL"
+    }
+]
+
 DANH_SACH_DANG_CHUAN = [
     {
         "value": "2NF",

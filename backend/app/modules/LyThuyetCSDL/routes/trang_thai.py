@@ -6,6 +6,7 @@ from .bao_dong_tap_phu_thuoc_ham import router as router_bao_dong_tap_phu_thuoc_
 from .bao_dong_tap_thuoc_tinh import router as router_bao_dong_tap_thuoc_tinh
 from .dang_chuan import router as router_dang_chuan
 from .khoa_ung_vien import router as router_khoa_ung_vien
+from ..config import MODULE_LY_THUYET_CSDL
 from ..schemas import PhanHoi, DeBaiTimBaoDongTapThuocTinh, DeBaiTimBaoDongTapPhuThuocHam, DeBaiTimKhoaUngVien, \
     DeBaiNangDangChuan
 from ..utils.ho_tro_phan_hoi import tao_phan_hoi_bao_dong_tap_thuoc_tinh, tao_phan_hoi_bao_dong_tap_phu_thuoc_ham, \
@@ -41,6 +42,13 @@ def lay_trang_thai_ban_dau(request: Request):
 
 
 router_tong = APIRouter(prefix="/api")
+
+@router_tong.get("/trang-thai")
+def lay_trang_thai_module():
+    return {
+        "cau_hinh": MODULE_LY_THUYET_CSDL
+    }
+
 router_tong.include_router(router_bao_dong_tap_thuoc_tinh)
 router_tong.include_router(router_bao_dong_tap_phu_thuoc_ham)
 router_tong.include_router(router_khoa_ung_vien)

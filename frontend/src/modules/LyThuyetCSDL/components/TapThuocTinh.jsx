@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ThongBao from "./ThongBao";
+import ThongBao from "../../../components/ThongBao";
 
 const TapThuocTinh = ({
     tapThuocTinh = [],

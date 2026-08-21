@@ -1,5 +1,5 @@
 import React from "react";
-import ThongBao from "./ThongBao";
+import ThongBao from "../../../components/ThongBao";
 
 const ChonDangChuan = ({
     dangChuan,

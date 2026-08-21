@@ -8,3 +8,100 @@ body {
 #root {
   width: 100%;
 }
+
+.datalogic-logo {
+    width: 280px;
+    height: 280px;
+    overflow: visible;
+}
+
+.logo-ring {
+    fill: none;
+    stroke: #0d47a1;
+    stroke-width: 2;
+    transform-origin: center;
+}
+
+.logo-ring-1 {
+    opacity: 0.25;
+    animation: logo-rotate 18s linear infinite;
+}
+
+.logo-ring-2 {
+    opacity: 0.15;
+    stroke-dasharray: 8 8;
+    animation: logo-rotate-reverse 12s linear infinite;
+}
+
+.logo-database {
+    fill: none;
+    stroke: #0d47a1;
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    animation: database-float 3s ease-in-out infinite;
+}
+
+.logo-node {
+    fill: #0d47a1;
+}
+
+.logo-node-1 {
+    animation: node-pulse 2s ease-in-out infinite;
+}
+
+.logo-node-2 {
+    animation: node-pulse 2s ease-in-out 0.5s infinite;
+}
+
+.logo-node-3 {
+    animation: node-pulse 2s ease-in-out 1s infinite;
+}
+
+.logo-node-4 {
+    animation: node-pulse 2s ease-in-out 1.5s infinite;
+}
+
+@keyframes logo-rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes logo-rotate-reverse {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(-360deg);
+    }
+}
+
+@keyframes database-float {
+    0%,
+    100% {
+        transform: translate(0, 35px);
+    }
+
+    50% {
+        transform: translate(0, 9px);
+    }
+}
+
+@keyframes node-pulse {
+    0%,
+    100% {
+        opacity: 0.5;
+        r: 6;
+    }
+
+    50% {
+        opacity: 1;
+        r: 9;
+    }
+}
