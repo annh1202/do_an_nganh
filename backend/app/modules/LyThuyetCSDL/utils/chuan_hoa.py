@@ -9,13 +9,15 @@ def chuan_hoa_thuoc_tinh(thuoc_tinh):
 
 
 def chuan_hoa_tap_thuoc_tinh(tap_thuoc_tinh):
+    if not tap_thuoc_tinh:
+        return set()
     return set(chuan_hoa_thuoc_tinh(thuoc_tinh) for thuoc_tinh in tap_thuoc_tinh)
 
 
 # ===========================================
 # CHUẨN HÓA TẬP PHỤ THUỘC HÀM
 # ===========================================
-def chuyen_tap_phu_thuoc_ham_sang_dang_class(tap_phu_thuoc_ham):
+def chuan_hoa_tap_phu_thuoc_ham_sang_dang_class(tap_phu_thuoc_ham):
     ket_qua = []
 
     for phu_thuoc_ham in tap_phu_thuoc_ham:

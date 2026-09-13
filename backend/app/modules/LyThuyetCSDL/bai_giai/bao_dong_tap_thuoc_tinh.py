@@ -7,7 +7,7 @@ from backend.app.modules.LyThuyetCSDL.utils.dinh_dang import dinh_dang_phu_thuoc
 # ================================
 # TÍNH BAO ĐÓNG TẬP THUỘC TÍNH
 # ================================
-def tinh_bao_dong_tap_thuoc_tinh(tap_thuoc_tinh_can_tim, tap_phu_thuoc_ham_dau_vao):
+def tinh_bao_dong_tap_thuoc_tinh(tap_thuoc_tinh_can_tim, tap_phu_thuoc_ham_dau_vao, tap_thuoc_tinh_goc=None):
     tap_phu_thuoc_ham = chuan_hoa_tap_phu_thuoc_ham_sang_tuple(tap_phu_thuoc_ham_dau_vao)
 
     bao_dong = set(chuan_hoa_tap_thuoc_tinh(tap_thuoc_tinh_can_tim))
@@ -19,9 +19,6 @@ def tinh_bao_dong_tap_thuoc_tinh(tap_thuoc_tinh_can_tim, tap_phu_thuoc_ham_dau_v
         co_thay_doi = False
 
         for ve_trai, ve_phai in tap_phu_thuoc_ham:
-
-            # ve_trai ⊆ bao_dong
-            # ve_phai chưa nằm hoàn toàn trong bao_dong
             if ve_trai.issubset(bao_dong) and not ve_phai.issubset(bao_dong):
 
                 bao_dong_chua_them = bao_dong.copy()
@@ -51,7 +48,17 @@ def tinh_bao_dong_tap_thuoc_tinh(tap_thuoc_tinh_can_tim, tap_phu_thuoc_ham_dau_v
         if not co_thay_doi:
             break
 
-    cac_buoc_giai.append(f"Vậy bao đóng tập thuộc tính là X⁺ = {{ {dinh_dang_tap_thuoc_tinh(bao_dong)} }}")
+    tap_thuoc_tinh = chuan_hoa_tap_thuoc_tinh(tap_thuoc_tinh_goc)
+    ket_luan = f"Vậy bao đóng tập thuộc tính là X⁺ = {{ {dinh_dang_tap_thuoc_tinh(bao_dong)} }} "
+
+    if tap_thuoc_tinh == bao_dong:
+        ket_luan += f"và {dinh_dang_chuoi_tap_thuoc_tinh(tap_thuoc_tinh_can_tim)} là siêu khóa"
+    else:
+        thuoc_tinh_con_thieu = tap_thuoc_tinh - bao_dong
+        ket_luan += (f"và {dinh_dang_chuoi_tap_thuoc_tinh(tap_thuoc_tinh_can_tim)} "
+                     f"không phải siêu khóa vì thiếu thuộc tính {", ".join(thuoc_tinh_con_thieu)}")
+
+    cac_buoc_giai.append(ket_luan)
 
     return bao_dong, cac_buoc_giai
 
@@ -61,7 +68,11 @@ if __name__ == '__main__':
     tap_phu_thuoc_ham = ["A → B", "B → C", "AC → D"]
     tap_thuoc_tinh_can_tim = ["A", "B"]
 
-    bao_dong, cac_buoc_giai = tinh_bao_dong_tap_thuoc_tinh(tap_thuoc_tinh_can_tim, tap_phu_thuoc_ham)
+    bao_dong, cac_buoc_giai = tinh_bao_dong_tap_thuoc_tinh(
+        tap_thuoc_tinh,
+        tap_thuoc_tinh_can_tim,
+        tap_phu_thuoc_ham
+    )
     print(bao_dong)
     for b in cac_buoc_giai:
         print(b)

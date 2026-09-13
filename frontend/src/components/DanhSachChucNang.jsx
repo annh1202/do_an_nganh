@@ -4,7 +4,6 @@ import { NavLink } from 'react-router-dom';
 const DanhSachChucNang = ({ title = "Danh mục", cacChucNang = [] }) => {
     return (
         <aside className="card shadow-sm border-0 mb-4">
-            {/* Tiêu đề thanh danh mục */}
             <div className="card-header bg-dark text-primary fw-bold py-3 fs-6">
                 {title}
             </div>

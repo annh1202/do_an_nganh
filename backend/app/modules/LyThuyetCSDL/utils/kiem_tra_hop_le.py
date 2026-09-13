@@ -71,11 +71,19 @@ def kiem_tra_tap_thuoc_tinh(tap_thuoc_tinh):
 # ====================================
 # KIỂM TRA PHỤ PHỤ THUỘC HÀM
 # ====================================
-def kiem_tra_tap_phu_thuoc_ham(tap_phu_thuoc_ham, tap_thuoc_tinh):
+def kiem_tra_tap_phu_thuoc_ham(tap_phu_thuoc_ham, tap_thuoc_tinh=None):
     if not isinstance(tap_phu_thuoc_ham, list):
         return False, "Tập phụ thuộc hàm phải là list"
 
-    tap_thuoc_tinh = set(tap_thuoc_tinh)
+    if not tap_phu_thuoc_ham:
+        return False, "Tập phụ thuộc hàm không được rỗng"
+
+    if tap_thuoc_tinh is None:
+        tap_thuoc_tinh = set()
+    else:
+        tap_thuoc_tinh = set(chuan_hoa_tap_thuoc_tinh(tap_thuoc_tinh))
+
+    cac_phu_thuoc_ham_da_co = set()
 
     for i, phu_thuoc_ham in enumerate(tap_phu_thuoc_ham):
         if not isinstance(phu_thuoc_ham, dict):
@@ -105,8 +113,7 @@ def kiem_tra_tap_phu_thuoc_ham(tap_phu_thuoc_ham, tap_thuoc_tinh):
                 return False, (
                     f"Thuộc tính '{thuoc_tinh}' trong phụ thuộc hàm thứ {i + 1} không hợp lệ"
                 )
-
-            if thuoc_tinh not in tap_thuoc_tinh:
+            if tap_thuoc_tinh and thuoc_tinh not in tap_thuoc_tinh:
                 return False, (
                     f"Thuộc tính '{thuoc_tinh}' "
                     "trong phụ thuộc hàm không tồn tại trong tập thuộc tính"
@@ -117,6 +124,16 @@ def kiem_tra_tap_phu_thuoc_ham(tap_phu_thuoc_ham, tap_thuoc_tinh):
             return False, (
                 f"Phụ thuộc hàm '{ve_trai} → {ve_phai}' là phụ thuộc hàm hiển nhiên"
             )
+
+        # Kiểm tra phụ thuộc hàm bị trùng
+        phu_thuoc_ham_hien_tai = (ve_trai, ve_phai)
+
+        if phu_thuoc_ham_hien_tai in cac_phu_thuoc_ham_da_co:
+            return False, (
+                f"Phụ thuộc hàm '{ve_trai} → {ve_phai}' bị trùng"
+            )
+
+        cac_phu_thuoc_ham_da_co.add(phu_thuoc_ham_hien_tai)
 
     return True, "Tập phụ thuộc hàm hợp lệ"
 
@@ -169,7 +186,7 @@ def kiem_tra_dang_chuan(dang_chuan):
     dang_chuan = dang_chuan.strip().upper()
 
     if dang_chuan not in dang_chuan_hop_le:
-        return False, f"Dạng chuẩn '{dang_chuan}' không hợp lệ"
+        return False, f"Dạng chuẩn '{dang_chuan}' không hợp lệ, phải là 2NF, 3NF hoặc BCNF"
 
     return True, "Dạng chuẩn hợp lệ"
 
@@ -207,20 +224,21 @@ def kiem_tra_file_bao_dong_tap_thuoc_tinh(data):
 
     return True, "File dạng chuẩn hợp lệ"
 
+
 def kiem_tra_file_bao_dong_tap_phu_thuoc_ham(data):
     if not isinstance(data, dict):
         return False, "Dữ liệu file phải là object"
 
-    # 2. Kiểm tra tập phụ thuộc hàm
-    tap_thuoc_tinh = data.get("tap_thuoc_tinh")
+    # Kiểm tra tập phụ thuộc hàm
     tap_phu_thuoc_ham = data.get("tap_phu_thuoc_ham")
 
-    hop_le, thong_bao = kiem_tra_tap_phu_thuoc_ham(tap_phu_thuoc_ham, tap_thuoc_tinh)
+    hop_le, thong_bao = kiem_tra_tap_phu_thuoc_ham(tap_phu_thuoc_ham, None)
 
     if not hop_le:
         return False, thong_bao
 
     return True, "File dạng chuẩn hợp lệ"
+
 
 def kiem_tra_file_dang_chuan(data):
     if not isinstance(data, dict):
@@ -251,198 +269,3 @@ def kiem_tra_file_dang_chuan(data):
         return False, thong_bao
 
     return True, "File dạng chuẩn hợp lệ"
-
-# # ====================<< VALIDATE COMMON STRUCTURE >>====================
-# def validate_common_fields(data):
-#     # attributes
-#     attributes = data.get("attributes")
-#
-#     if not isinstance(attributes, list) or not attributes:
-#         return False, (
-#             "Field 'attributes' phải là list "
-#             "và không được rỗng"
-#         )
-#
-#     # fds
-#     fds = data.get("fds")
-#
-#     if not isinstance(fds, list):
-#         return False, "Field 'fds' phải là list"
-#
-#     for i, fd in enumerate(fds):
-#
-#         if not isinstance(fd, list) or len(fd) != 2:
-#             return False, (
-#                 f"fds[{i}] phải có dạng "
-#                 "[lhs, rhs]"
-#             )
-#
-#         lhs, rhs = fd
-#
-#         if not isinstance(lhs, list):
-#             return False, (
-#                 f"fds[{i}][0] (lhs) "
-#                 "phải là list"
-#             )
-#
-#         if not isinstance(rhs, list):
-#             return False, (
-#                 f"fds[{i}][1] (rhs) "
-#                 "phải là list"
-#             )
-#
-#     return True, "OK"
-#
-#
-# # ====================<< VALIDATE CLOSURE OF ATTRIBUTES >>====================
-# def validate_closure_of_attributes(data):
-#     """
-#     Kiểm tra tính hợp lệ toàn diện của tệp tin cấu hình dành cho bài toán "Tìm bao đóng của tập thuộc tính".
-#     Yêu cầu bổ sung trường mục tiêu 'target'.
-#
-#     Args:
-#         data (dict): Dữ liệu phân tích từ file JSON.
-#
-#     Returns:
-#         tuple: Bộ đôi (Trạng thái hợp lệ, Thông báo phản hồi kết quả).
-#     """
-#     # type
-#     if data.get("type") != "closure_of_attributes":
-#         return False, (
-#             "File không thuộc loại "
-#             "'closure_of_attributes'"
-#         )
-#
-#     # common fields
-#     is_valid, message = validate_common_fields(data)
-#
-#     if not is_valid:
-#         return False, message
-#
-#     # target
-#     target = data.get("target")
-#
-#     if target is None:
-#         return False, (
-#             "Type 'closure_of_attributes' "
-#             "phải có field 'target'"
-#         )
-#
-#     if not isinstance(target, list):
-#         return False, (
-#             "Field 'target' phải là list"
-#         )
-#
-#     return True, "File closure_of_attributes hợp lệ"
-#
-#
-# # ====================<< VALIDATE CLOSURE OF FUNCTIONAL DEPENDENCIES >>====================
-# def validate_closure_of_functional_dependencies(data):
-#     """
-#     Kiểm tra tính hợp lệ toàn diện của tệp tin cấu hình dành cho bài toán "Tìm bao đóng của tập phụ thuộc hàm".
-#
-#     Args:
-#         data (dict): Dữ liệu phân tích từ file JSON.
-#
-#     Returns:
-#         tuple: Bộ đôi (Trạng thái hợp lệ, Thông báo phản hồi kết quả).
-#     """
-#     # type
-#     if data.get("type") != (
-#             "closure_of_functional_dependencies"
-#     ):
-#         return False, (
-#             "File không thuộc loại "
-#             "'closure_of_functional_dependencies'"
-#         )
-#
-#     # common fields
-#     is_valid, message = validate_common_fields(data)
-#
-#     if not is_valid:
-#         return False, message
-#
-#     return True, (
-#         "File closure_of_functional_dependencies hợp lệ"
-#     )
-#
-#
-# # ====================<< VALIDATE CANDIDATE KEYS >>====================
-# def validate_candidate_keys(data):
-#     """
-#     Kiểm tra tính hợp lệ toàn diện của tệp tin cấu hình dành cho bài toán "Tìm khóa ứng viên".
-#
-#     Args:
-#         data (dict): Dữ liệu phân tích từ file JSON.
-#
-#     Returns:
-#         tuple: Bộ đôi (Trạng thái hợp lệ, Thông báo phản hồi kết quả).
-#     """
-#     # type
-#     if data.get("type") != "candidate_keys":
-#         return False, (
-#             "File không thuộc loại "
-#             "'candidate_keys'"
-#         )
-#
-#     # common fields
-#     is_valid, message = validate_common_fields(data)
-#
-#     if not is_valid:
-#         return False, message
-#
-#     return True, (
-#         "File candidate_keys hợp lệ"
-#     )
-#
-#
-# # ====================<< VALIDATE NORMAL FORM >>====================
-# def validate_normal_form(data):
-#     """
-#     Kiểm tra tính hợp lệ toàn diện của tệp tin cấu hình dành cho bài toán "Phân rã dạng chuẩn".
-#     Yêu cầu cấu hình phải tồn tại trường cấp độ đích 'target-level' thuộc danh sách (1NF, 2NF, 3NF, BCNF).
-#
-#     Args:
-#         data (dict): Dữ liệu phân tích từ file JSON.
-#
-#     Returns:
-#         tuple: Bộ đôi (Trạng thái hợp lệ, Thông báo phản hồi kết quả).
-#     """
-#     # type
-#     if data.get("type") != "normal_form":
-#         return False, (
-#             "File không thuộc loại "
-#             "'normal_form'"
-#         )
-#
-#     # common fields
-#     is_valid, message = validate_common_fields(data)
-#
-#     if not is_valid:
-#         return False, message
-#
-#     # target-level
-#     level = data.get("target-level")
-#
-#     valid_levels = {
-#         "1NF",
-#         "2NF",
-#         "3NF",
-#         "BCNF"
-#     }
-#
-#     if level is None:
-#         return False, (
-#             "Type 'normal_form' "
-#             "phải có field 'target-level'"
-#         )
-#
-#     if level not in valid_levels:
-#         return False, (
-#             "Field 'target-level' không hợp lệ. "
-#             "Phải là: 1NF, 2NF, 3NF hoặc BCNF"
-#         )
-#
-#     return True, (
-#         "File normal_form hợp lệ"
-#     )

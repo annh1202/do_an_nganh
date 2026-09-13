@@ -19,20 +19,20 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# 1. Cấu hình Session Middleware (Thay thế hoàn toàn cho biến global db trên RAM)
+# 1. Cấu hình Session Middleware
 SECRET_KEY = os.getenv("SECRET_KEY")
 app.add_middleware(
     SessionMiddleware,
     secret_key=SECRET_KEY, # Đặt chuỗi bất kỳ tùy ý
-    session_cookie="session_csdl",                          # Tên cookie lưu ở trình duyệt
-    max_age=3600                                            # Thời gian sống của session (1 tiếng)
+    session_cookie="session_csdl",
+    max_age=3600 # Thời gian sống của session (1 tiếng)
 )
 
 # 2. Cấu hình CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Chỉ định đích danh port của React
-    allow_credentials=True,                   # BẮT BUỘC bằng True để trình duyệt chịu gửi Cookie/Session kèm theo API
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True, # gửi Cookie/Session kèm theo API
     allow_methods=["*"],
     allow_headers=["*"],
 )

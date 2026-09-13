@@ -39,15 +39,10 @@ def co_phai_phu_thuoc_ham_du_thua(phu_thuoc_ham_can_xet, tap_phu_thuoc_ham_hien_
 
 
 def loai_bo_phu_thuoc_ham_du_thua(tap_pth):
-    """
-    Tìm phủ tối thiểu (Minimal Cover) cho tập phụ thuộc hàm.
-    Chuyển đổi dữ liệu sang dạng ["A → B", "B → C"] đúng chuẩn
-    yêu cầu của hàm tinh_bao_dong_tap_thuoc_tinh().
-    """
     if not tap_pth:
         return []
 
-    # BƯỚC 1: Phân rã vế phải thành các thuộc tính đơn
+    # Phân rã vế phải thành các thuộc tính đơn
     pth_don = []
     for vt, vp in tap_pth:
         vt_set = set(vt) if isinstance(vt, (list, tuple, set)) else {vt}
@@ -55,7 +50,6 @@ def loai_bo_phu_thuoc_ham_du_thua(tap_pth):
         for v in vp_set:
             pth_don.append((vt_set, {v}))
 
-    # BƯỚC 2: Loại bỏ thuộc tính dư thừa ở vế trái (Ví dụ: AE -> D thu gọn thành A -> D)
     pth_toi_uu_vt = []
     for vt, vp in pth_don:
         vt_moi = set(vt)
@@ -63,31 +57,25 @@ def loai_bo_phu_thuoc_ham_du_thua(tap_pth):
         for z in list(vt):
             if len(vt_moi) > 1:
                 vt_thu = vt_moi - {z}
-                # Đổi về dạng chuỗi ["AE → D"] để tính bao đóng
                 pth_thu_chuoi = dinh_dang_tap_phu_thuoc_ham_tuple([(vt_moi, vp)])
-                bd, _ = tinh_bao_dong_tap_thuoc_tinh(vt_thu, pth_thu_chuoi)
-                if vp_char in bd:
+                bao_dong, _ = tinh_bao_dong_tap_thuoc_tinh(vt_thu, pth_thu_chuoi)
+                if vp_char in bao_dong:
                     vt_moi.remove(z)
         pth_toi_uu_vt.append((vt_moi, vp))
 
-    # BƯỚC 3: Loại bỏ các phụ thuộc hàm dư thừa (Ví dụ: xóa A -> E nếu đã có A -> D và D -> E)
     pth_ket_qua = []
     for i in range(len(pth_toi_uu_vt)):
         vt_hien_tai, vp_hien_tai = pth_toi_uu_vt[i]
         vp_char = list(vp_hien_tai)[0]
 
-        # Lấy các PTH còn lại và đổi sang dạng chuỗi ["A → D", "D → E", ...]
         tap_con_lai = pth_toi_uu_vt[:i] + pth_toi_uu_vt[i + 1:]
         tap_con_lai_chuoi = dinh_dang_tap_phu_thuoc_ham_tuple(tap_con_lai)
 
-        # Tính bao đóng trên danh sách chuỗi chuẩn
-        bd, _ = tinh_bao_dong_tap_thuoc_tinh(vt_hien_tai, tap_con_lai_chuoi)
+        bao_dong, _ = tinh_bao_dong_tap_thuoc_tinh(vt_hien_tai, tap_con_lai_chuoi)
 
-        # Nếu KHÔNG thể suy ra vế phải từ các PTH khác thì BẮT BUỘC giữ lại
-        if vp_char not in bd:
+        if vp_char not in bao_dong:
             pth_ket_qua.append((vt_hien_tai, vp_hien_tai))
 
-    # Chuyển kết quả về lại dạng tuple chuẩn để đồng bộ hệ thống
     return pth_ket_qua
 
 
@@ -278,8 +266,6 @@ def tim_phu_thuoc_bo_phan_voi_khoa(ve_trai, ve_phai, danh_sach_khoa_ung_vien):
 def tim_phu_thuoc_ham_vi_pham_dang_chuan_2(tap_phu_thuoc_ham, cac_khoa_ung_vien):
     """
     Tìm phụ thuộc hàm có thuộc tính không khóa phụ thuộc bộ phận vào khóa
-
-    tham số tap_phu_thuoc_ham: tập phụ thuộc hàm dạng list(tuple) có vế phải chỉ gồm 1 thuộc tính
     """
     danh_sach_pth_vi_pham = []
 
@@ -347,7 +333,7 @@ def tim_phu_thuoc_ham_vi_pham_bcnf(tap_thuoc_tinh, tap_phu_thuoc_ham):
         if not ve_phai_trong_R:
             continue
 
-        # 2. Bỏ qua PTH hiển nhiên (Y <= X)
+        # 2. Bỏ qua PTH hiển nhiên
         if ve_phai_trong_R.issubset(ve_trai_set):
             continue
 

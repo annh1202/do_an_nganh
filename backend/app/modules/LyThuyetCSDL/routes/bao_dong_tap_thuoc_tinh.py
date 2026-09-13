@@ -4,6 +4,7 @@ from backend.app.modules.LyThuyetCSDL.bai_giai.bao_dong_tap_thuoc_tinh import ti
 from backend.app.modules.LyThuyetCSDL.config import KhoaSession, LoaiThongBao
 from backend.app.modules.LyThuyetCSDL.schemas import DeBaiTimBaoDongTapThuocTinh, PhuThuocHam, ThuocTinh, PhanHoi, \
     BaiGiai
+from backend.app.modules.LyThuyetCSDL.utils.chuan_hoa import chuan_hoa_tap_thuoc_tinh
 from backend.app.modules.LyThuyetCSDL.utils.dinh_dang import dinh_dang_tap_phu_thuoc_ham_object, \
     dinh_dang_tap_phu_thuoc_ham_tuple
 from backend.app.modules.LyThuyetCSDL.utils.ho_tro_phan_hoi import tao_phan_hoi_bao_dong_tap_thuoc_tinh
@@ -236,7 +237,7 @@ def route_xoa_trong_thuoc_tinh(request: Request):
 # CÁC CHỨC NĂNG CHÍNH
 # ==========================================
 @router.post("/tao-de-bai-ngau-nhien", response_model=PhanHoi[DeBaiTimBaoDongTapThuocTinh])
-def route_tai_de_len(request: Request):
+def route_tao_de_bai_ngau_nhien(request: Request):
     tap_thuoc_tinh = tao_tap_thuoc_tinh_ngau_nhien()
     tap_phu_thuoc_ham = tao_tap_phu_thuoc_ham_ngau_nhien(tap_thuoc_tinh)
     tap_thuoc_tinh_can_tim = tao_tap_thuoc_tinh_can_tim_ngau_nhien(tap_thuoc_tinh)
@@ -268,14 +269,16 @@ def route_tai_de_len(data: DeBaiTimBaoDongTapThuocTinh, request: Request):
             thong_bao=thong_bao
         )
 
+    tap_thuoc_tinh = chuan_hoa_tap_thuoc_tinh(data.tap_thuoc_tinh)
     tap_phu_thuoc_ham = dinh_dang_tap_phu_thuoc_ham_object(
         data.tap_phu_thuoc_ham
     )
+    tap_thuoc_tinh_can_tim = chuan_hoa_tap_thuoc_tinh(data.tap_thuoc_tinh_can_tim)
 
     trang_thai = {
-        KhoaSession.TAP_THUOC_TINH: data.tap_thuoc_tinh,
+        KhoaSession.TAP_THUOC_TINH: tap_thuoc_tinh,
         KhoaSession.TAP_PHU_THUOC_HAM: tap_phu_thuoc_ham,
-        KhoaSession.TAP_THUOC_TINH_CAN_TIM: data.tap_thuoc_tinh_can_tim
+        KhoaSession.TAP_THUOC_TINH_CAN_TIM: tap_thuoc_tinh_can_tim
     }
 
     cap_nhat_bao_dong_tap_thuoc_tinh_session(request, trang_thai)
@@ -294,7 +297,6 @@ def route_giai_bao_dong_tap_thuoc_tinh(request: Request):
     tap_phu_thuoc_ham = trang_thai[KhoaSession.TAP_PHU_THUOC_HAM]
     tap_thuoc_tinh_can_tim = trang_thai[KhoaSession.TAP_THUOC_TINH_CAN_TIM]
 
-    # Kiểm tra dữ liệu đầu vào
     if not tap_thuoc_tinh:
         return PhanHoi(
             doi_tuong=None,
@@ -318,7 +320,8 @@ def route_giai_bao_dong_tap_thuoc_tinh(request: Request):
 
     ket_qua, loi_giai = tinh_bao_dong_tap_thuoc_tinh(
         tap_thuoc_tinh_can_tim,
-        tap_phu_thuoc_ham
+        tap_phu_thuoc_ham,
+        tap_thuoc_tinh
     )
 
     ket_qua = f"X⁺ = {{ {", ".join(sorted(ket_qua))} }}"

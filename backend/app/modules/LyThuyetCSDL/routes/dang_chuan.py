@@ -7,6 +7,7 @@ from backend.app.modules.LyThuyetCSDL.bai_giai.dang_chuan import nang_dang_chuan
 from backend.app.modules.LyThuyetCSDL.config import KhoaSession, LoaiThongBao, DANH_SACH_DANG_CHUAN
 from backend.app.modules.LyThuyetCSDL.schemas import PhuThuocHam, ThuocTinh, PhanHoi, \
     DeBaiNangDangChuan, DangChuan, BaiGiai
+from backend.app.modules.LyThuyetCSDL.utils.chuan_hoa import chuan_hoa_tap_thuoc_tinh
 from backend.app.modules.LyThuyetCSDL.utils.dinh_dang import dinh_dang_tap_phu_thuoc_ham_tuple, \
     dinh_dang_tap_phu_thuoc_ham_object
 from backend.app.modules.LyThuyetCSDL.utils.ho_tro_phan_hoi import tao_phan_hoi_dang_chuan
@@ -105,7 +106,6 @@ def route_xoa_trong_thuoc_tinh(request: Request):
 def route_them_phu_thuoc_ham(data: PhuThuocHam, request: Request):
     trang_thai = lay_dang_chuan_session(request)
 
-    # Gọi trực tiếp action thêm phụ thuộc hàm, truyền thẳng vế trái và vế phải thô vào
     co_thanh_cong, loai_thong_bao, thong_bao = them_phu_thuoc_ham(
         data.ve_trai,
         data.ve_phai,
@@ -224,14 +224,16 @@ def route_tai_de_len(data: DeBaiNangDangChuan, request: Request):
             thong_bao=thong_bao
         )
 
+    tap_thuoc_tinh = chuan_hoa_tap_thuoc_tinh(data.tap_thuoc_tinh)
     tap_phu_thuoc_ham = dinh_dang_tap_phu_thuoc_ham_object(
         data.tap_phu_thuoc_ham
     )
+    dang_chuan = data.dang_chuan.strip().upper()
 
     trang_thai = {
-        KhoaSession.TAP_THUOC_TINH: data.tap_thuoc_tinh,
+        KhoaSession.TAP_THUOC_TINH: tap_thuoc_tinh,
         KhoaSession.TAP_PHU_THUOC_HAM: tap_phu_thuoc_ham,
-        KhoaSession.DANG_CHUAN: data.dang_chuan
+        KhoaSession.DANG_CHUAN: dang_chuan
     }
 
     cap_nhat_dang_chuan_session(request, trang_thai)

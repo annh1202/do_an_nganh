@@ -5,7 +5,6 @@ export default function Home() {
     return (
         <div className="container-fluid px-5">
 
-            {/* Hero */}
             <section >
                 <div className="row align-items-center py-5">
                     <div className="col-lg-7">
@@ -46,7 +45,6 @@ export default function Home() {
                                 xmlns="http://www.w3.org/2000/svg"
                             >
 
-                                {/* Vòng ngoài */}
                                 <circle
                                     className="logo-ring logo-ring-1"
                                     cx="150"
@@ -61,7 +59,6 @@ export default function Home() {
                                     r="90"
                                 />
 
-                                {/* Các node */}
                                 <circle
                                     className="logo-node logo-node-1"
                                     cx="150"
@@ -90,7 +87,6 @@ export default function Home() {
                                     r="7"
                                 />
 
-                                {/* Icon database */}
                                 <g className="logo-database">
                                     <ellipse
                                         cx="150"
@@ -136,8 +132,6 @@ export default function Home() {
                 </div>
             </section>
 
-
-            {/* Giới thiệu */}
             <section id="gioi-thieu" className="py-5">
                 <div className="text-center mb-5">
                     <h2 className="fw-bold">
@@ -204,8 +198,6 @@ export default function Home() {
                 </div>
             </section>
 
-
-            {/* Chức năng */}
             <section id="chuc-nang" className="py-5">
 
                 <div className="text-center mb-5">
@@ -320,8 +312,6 @@ export default function Home() {
                 </div>
             </section>
 
-
-            {/* CTA */}
             <section className="py-5">
                 <div className="bg-primary text-white rounded-4 p-5 text-center">
                     <i className="bi bi-database-fill display-5"></i>

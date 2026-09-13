@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, Request
 from backend.app.modules.LyThuyetCSDL.config import KhoaSession, LoaiThongBao
 from backend.app.modules.LyThuyetCSDL.schemas import PhuThuocHam, ThuocTinh, PhanHoi, \
     DeBaiTimKhoaUngVien, BaiGiai
+from backend.app.modules.LyThuyetCSDL.utils.chuan_hoa import chuan_hoa_tap_thuoc_tinh
 from backend.app.modules.LyThuyetCSDL.utils.tao_ngau_nhien import tao_tap_thuoc_tinh_ngau_nhien, \
     tao_tap_phu_thuoc_ham_ngau_nhien
 from backend.app.modules.LyThuyetCSDL.bai_giai.khoa_ung_vien import tim_khoa_ung_vien
@@ -100,7 +101,6 @@ def route_xoa_trong_thuoc_tinh(request: Request):
 def route_them_phu_thuoc_ham(data: PhuThuocHam, request: Request):
     trang_thai = lay_khoa_ung_vien_session(request)
 
-    # Gọi trực tiếp action thêm phụ thuộc hàm, truyền thẳng vế trái và vế phải thô vào
     co_thanh_cong, loai_thong_bao, thong_bao = them_phu_thuoc_ham(
         data.ve_trai,
         data.ve_phai,
@@ -185,12 +185,13 @@ def route_tai_de_len(request: Request):
 
 @router.post("/tai-de-bai-len", response_model=PhanHoi[DeBaiTimKhoaUngVien])
 def route_tai_de_len(data: DeBaiTimKhoaUngVien, request: Request):
+    tap_thuoc_tinh = chuan_hoa_tap_thuoc_tinh(data.tap_thuoc_tinh)
     tap_phu_thuoc_ham = dinh_dang_tap_phu_thuoc_ham_object(
         data.tap_phu_thuoc_ham
     )
 
     trang_thai = {
-        KhoaSession.TAP_THUOC_TINH: data.tap_thuoc_tinh or [],
+        KhoaSession.TAP_THUOC_TINH: tap_thuoc_tinh or [],
         KhoaSession.TAP_PHU_THUOC_HAM: tap_phu_thuoc_ham or []
     }
 

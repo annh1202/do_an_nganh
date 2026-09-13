@@ -532,8 +532,8 @@ if __name__ == '__main__':
     for ttt, tpth in zip(tap_thuoc_tinh, tap_phu_thuoc_ham):
         print(f"Bài {i}")
         i += 1
-        print(f"Tập thuộc tính R = {{ {", ".join(ttt)} }}")
-        print(f"Tập phụ thuộc hàm F = {{ {", ".join(tpth)} }}")
+        print(f"Tập thuộc tính R = {{ {', '.join(ttt)} }}")
+        print(f"Tập phụ thuộc hàm F = {{ {', '.join(tpth)} }}")
 
         result, steps = nang_dang_chuan_bcnf(ttt, tpth)
         print(result)

@@ -129,18 +129,13 @@ def tim_khoa_ung_vien(tap_thuoc_tinh, tap_phu_thuoc_ham):
             # TÍNH BAO ĐÓNG
             # ========================================================
 
-            bao_dong, _ = (
-                tinh_bao_dong_tap_thuoc_tinh(tap_thuoc_tinh_dang_chuoi, tap_phu_thuoc_ham)
-            )
+            bao_dong, _ = tinh_bao_dong_tap_thuoc_tinh(tap_thuoc_tinh_dang_chuoi, tap_phu_thuoc_ham)
 
             tap_bao_dong = set(bao_dong)
 
             noi_dung_tung_buoc = (
-                f"Bước {so_buoc}: "
-                f"{tap_thuoc_tinh_dang_chuoi}⁺ = "
-                f"{{ "
-                f"{dinh_dang_tap_thuoc_tinh(bao_dong) if bao_dong else '∅'} "
-                f"}}\n"
+                f"Bước {so_buoc}: {tap_thuoc_tinh_dang_chuoi}⁺ = "
+                f"{{ {dinh_dang_tap_thuoc_tinh(bao_dong) if bao_dong else '∅'} }}\n"
             )
 
             so_buoc += 1
@@ -175,7 +170,7 @@ def tim_khoa_ung_vien(tap_thuoc_tinh, tap_phu_thuoc_ham):
 
             cac_buoc_giai.append(noi_dung_tung_buoc)
 
-    return cac_khoa_ung_vien, cac_buoc_giai
+    return sorted(cac_khoa_ung_vien), cac_buoc_giai
 
 
 

@@ -247,7 +247,6 @@ const DangChuan = () => {
                         noi_dung: thongBao || "Tải đề bài lên hệ thống thành công!"
                     });
                 } else {
-                    // Backend trả về warning/error
                     setThongBaoDeBai({
                         loai_thong_bao: loaiThongBao || "warning",
                         noi_dung: thongBao || "File không hợp lệ!"

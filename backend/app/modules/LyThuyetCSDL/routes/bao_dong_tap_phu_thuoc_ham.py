@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, Request
 
 from backend.app.modules.LyThuyetCSDL.config import KhoaSession, LoaiThongBao
 from backend.app.modules.LyThuyetCSDL.schemas import PhuThuocHam, PhanHoi, DeBaiTimBaoDongTapPhuThuocHam, BaiGiai
+from backend.app.modules.LyThuyetCSDL.utils.kiem_tra_hop_le import kiem_tra_file_bao_dong_tap_phu_thuoc_ham
 from backend.app.modules.LyThuyetCSDL.utils.tao_ngau_nhien import tao_tap_thuoc_tinh_ngau_nhien, \
     tao_tap_phu_thuoc_ham_ngau_nhien
 from backend.app.modules.LyThuyetCSDL.utils.dinh_dang import dinh_dang_phu_thuoc_ham, dinh_dang_tap_phu_thuoc_ham_tuple, \
@@ -28,7 +29,6 @@ router = APIRouter(prefix="/bao-dong-tap-phu-thuoc-ham", tags=["Bao đóng tập
 def route_them_phu_thuoc_ham(data: PhuThuocHam, request: Request):
     trang_thai = lay_bao_dong_tap_phu_thuoc_ham_session(request)
 
-    # Gọi trực tiếp action thêm phụ thuộc hàm, truyền thẳng vế trái và vế phải thô vào
     co_thanh_cong, loai_thong_bao, thong_bao = them_phu_thuoc_ham(
         data.ve_trai,
         data.ve_phai,
@@ -116,6 +116,17 @@ def route_tai_de_len(request: Request):
 
 @router.post("/tai-de-bai-len", response_model=PhanHoi[DeBaiTimBaoDongTapPhuThuocHam])
 def route_tai_de_len(data: DeBaiTimBaoDongTapPhuThuocHam, request: Request):
+    du_lieu = data.model_dump()
+
+    hop_le, thong_bao = kiem_tra_file_bao_dong_tap_phu_thuoc_ham(du_lieu)
+
+    if not hop_le:
+        return tao_phan_hoi_bao_dong_tap_phu_thuoc_ham(
+            trang_thai=lay_bao_dong_tap_phu_thuoc_ham_session(request),
+            loai_thong_bao="warning",
+            thong_bao=thong_bao
+        )
+
     tap_phu_thuoc_ham = dinh_dang_tap_phu_thuoc_ham_object(
         data.tap_phu_thuoc_ham
     )
@@ -126,10 +137,12 @@ def route_tai_de_len(data: DeBaiTimBaoDongTapPhuThuocHam, request: Request):
 
     cap_nhat_bao_dong_tap_phu_thuoc_ham_session(request, trang_thai)
 
-    loai_thong_bao = "success"
-    thong_bao = "Tải đề bài lên hệ thống thành công!"
+    return tao_phan_hoi_bao_dong_tap_phu_thuoc_ham(
+        trang_thai=trang_thai,
+        loai_thong_bao="success",
+        thong_bao="Tải đề bài lên hệ thống thành công!"
+    )
 
-    return tao_phan_hoi_bao_dong_tap_phu_thuoc_ham(trang_thai, loai_thong_bao, thong_bao)
 
 @router.post("/giai-de", response_model=PhanHoi[BaiGiai])
 def route_giai_bao_dong_tap_thuoc_tinh(request: Request):

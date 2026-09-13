@@ -4,7 +4,6 @@ const GioiThieu = () => {
     return (
         <div className="container py-4">
 
-            {/* Tiêu đề */}
             <div className="p-5 mb-4 bg-primary text-white rounded-3 text-center shadow-sm">
                 <h1 className="display-5 fw-bold text-uppercase">
                     Module Database Theory
@@ -14,7 +13,6 @@ const GioiThieu = () => {
                 </p>
             </div>
 
-            {/* Giới thiệu */}
             <div className="alert alert-info border-0 shadow-sm p-4 mb-5">
                 <h5 className="alert-heading fw-bold mb-2">
                     Giới thiệu chung
@@ -32,7 +30,6 @@ const GioiThieu = () => {
                 </p>
             </div>
 
-            {/* Chức năng */}
             <h2 className="h3 fw-bold text-primary border-bottom pb-2 mb-3">
                 1. Danh Sách Các Chức Năng Cốt Lõi
             </h2>
@@ -98,7 +95,6 @@ const GioiThieu = () => {
                 </table>
             </div>
 
-            {/* Tiện ích */}
             <h2 className="h3 fw-bold text-primary border-bottom pb-2 mb-3">
                 2. Các Tiện Ích Hỗ Trợ
             </h2>
@@ -150,7 +146,6 @@ const GioiThieu = () => {
                 </div>
             </div>
 
-            {/* JSON */}
             <h2 className="h3 fw-bold text-primary border-bottom pb-2 mb-3">
                 3. Cấu Trúc File JSON
             </h2>

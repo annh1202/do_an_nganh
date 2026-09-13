@@ -63,7 +63,6 @@ def cap_nhat_khoa_ung_vien_session(request: Request, trang_thai: dict):
 # DẠNG CHUẨN
 # ==============================
 def lay_dang_chuan_session(request: Request) -> dict:
-    """Khởi tạo session nếu user mới truy cập lần đầu"""
     if KhoaSession.DANG_CHUAN not in request.session:
         request.session[KhoaSession.DANG_CHUAN] = {
             KhoaSession.TAP_THUOC_TINH: [],

@@ -6,7 +6,6 @@ export const TaoTapThuocTinhCanTim = ({
 }) => {
 
     const hienThongBaoLoi = (loi) => {
-        // Axios
         const detail = loi.response?.data?.detail;
 
         if (detail && detail.thong_bao) {

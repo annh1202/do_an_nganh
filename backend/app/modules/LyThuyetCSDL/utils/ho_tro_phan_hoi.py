@@ -6,7 +6,7 @@ from backend.app.modules.LyThuyetCSDL.schemas import (
     DeBaiTimKhoaUngVien,
     DeBaiNangDangChuan
 )
-from backend.app.modules.LyThuyetCSDL.utils.chuan_hoa import chuyen_tap_phu_thuoc_ham_sang_dang_class
+from backend.app.modules.LyThuyetCSDL.utils.chuan_hoa import chuan_hoa_tap_phu_thuoc_ham_sang_dang_class
 
 
 # ==============================
@@ -16,7 +16,7 @@ def tao_phan_hoi_bao_dong_tap_thuoc_tinh(trang_thai, loai_thong_bao, thong_bao):
     return PhanHoi(
         doi_tuong=DeBaiTimBaoDongTapThuocTinh(
             tap_thuoc_tinh=trang_thai[KhoaSession.TAP_THUOC_TINH],
-            tap_phu_thuoc_ham=chuyen_tap_phu_thuoc_ham_sang_dang_class(
+            tap_phu_thuoc_ham=chuan_hoa_tap_phu_thuoc_ham_sang_dang_class(
                 trang_thai[KhoaSession.TAP_PHU_THUOC_HAM]
             ),
             tap_thuoc_tinh_can_tim=trang_thai[KhoaSession.TAP_THUOC_TINH_CAN_TIM]
@@ -31,7 +31,7 @@ def tao_phan_hoi_bao_dong_tap_thuoc_tinh(trang_thai, loai_thong_bao, thong_bao):
 def tao_phan_hoi_bao_dong_tap_phu_thuoc_ham(trang_thai, loai_thong_bao, thong_bao):
     return PhanHoi(
         doi_tuong=DeBaiTimBaoDongTapPhuThuocHam(
-            tap_phu_thuoc_ham=chuyen_tap_phu_thuoc_ham_sang_dang_class(
+            tap_phu_thuoc_ham=chuan_hoa_tap_phu_thuoc_ham_sang_dang_class(
                 trang_thai[KhoaSession.TAP_PHU_THUOC_HAM]
             ),
         ),
@@ -46,7 +46,7 @@ def tao_phan_hoi_khoa_ung_vien(trang_thai, loai_thong_bao, thong_bao):
     return PhanHoi(
         doi_tuong=DeBaiTimKhoaUngVien(
             tap_thuoc_tinh=trang_thai[KhoaSession.TAP_THUOC_TINH],
-            tap_phu_thuoc_ham=chuyen_tap_phu_thuoc_ham_sang_dang_class(
+            tap_phu_thuoc_ham=chuan_hoa_tap_phu_thuoc_ham_sang_dang_class(
                 trang_thai[KhoaSession.TAP_PHU_THUOC_HAM]
             )
         ),
@@ -61,7 +61,7 @@ def tao_phan_hoi_dang_chuan(trang_thai, loai_thong_bao, thong_bao):
     return PhanHoi(
         doi_tuong=DeBaiNangDangChuan(
             tap_thuoc_tinh=trang_thai[KhoaSession.TAP_THUOC_TINH],
-            tap_phu_thuoc_ham=chuyen_tap_phu_thuoc_ham_sang_dang_class(
+            tap_phu_thuoc_ham=chuan_hoa_tap_phu_thuoc_ham_sang_dang_class(
                 trang_thai[KhoaSession.TAP_PHU_THUOC_HAM]
             ),
             dang_chuan=trang_thai[KhoaSession.DANG_CHUAN]
