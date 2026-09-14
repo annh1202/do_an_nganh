@@ -1,6 +1,9 @@
 import subprocess
 import time
 import urllib.request
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 def wait_for_server(url, timeout=30):
     start = time.perf_counter()
@@ -18,13 +21,13 @@ if __name__ == "__main__":
 
     backend = subprocess.Popen(
         ["uvicorn", "app.main:app", "--reload"],
-        cwd=r"A:\DoAnNganh\do_an_nganh\backend",
+        cwd=BASE_DIR / "backend",
         creationflags=subprocess.CREATE_NEW_CONSOLE
     )
 
     frontend = subprocess.Popen(
         ["npm", "run", "dev"],
-        cwd=r"A:\DoAnNganh\do_an_nganh\frontend",
+        cwd=BASE_DIR / "frontend",
         shell=True,
         creationflags=subprocess.CREATE_NEW_CONSOLE
     )
