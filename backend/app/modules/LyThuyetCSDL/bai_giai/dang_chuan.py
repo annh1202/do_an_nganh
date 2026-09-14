@@ -424,6 +424,9 @@ def nang_dang_chuan_bcnf(tap_thuoc_tinh, tap_phu_thuoc_ham):
                 f"R{i}({tap_tt_trong_bang}) với không có phụ thuộc hàm nào"
             )
 
+    if len(cac_buoc_giai) == 1:
+        cac_buoc_giai.append("Quan hệ đã đạt dạng chuẩn Boyce-Codd")
+
     return "\n".join(cac_bang_duoc_tach), cac_buoc_giai
 
 
