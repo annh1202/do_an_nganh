@@ -4,14 +4,13 @@ Tài liệu hướng dẫn chi tiết các bước từ tải mã nguồn (clone
 
 ---
 
-## Cấu Trúc Dự Án (Project Structure)
+## Cấu Trúc Dự Án
 
 ```text
 do_an_nganh/
 │
 ├── backend/
     ├── app/
-    ├── pytest/
     ├── .env              # File chứa biến môi trường (Cần tạo thủ công)
     ├── run.py            # File thực thi chính khởi chạy ứng dụng
 ├── frontend/
@@ -24,7 +23,7 @@ do_an_nganh/
 
 ## Các Bước Cài Đặt & Khởi Chạy
 
-### Bước 1: Clone Mã Nguồn (Repository)
+### Bước 1: Clone Mã Nguồn
 
 Mở terminal/command prompt và thực hiện lệnh clone dự án về máy:
 
@@ -34,7 +33,7 @@ git clone https://github.com/annh1202/do_an_nganh.git
 
 ---
 
-### Bước 2: Tạo File Cấu Hình Biến Môi Trường (`.env`)
+### Bước 2: Tạo File Cấu Hình Biến Môi Trường
 
 Tạo một file mới tên `.env` tại thư mục gốc của dự án. Thêm cấu hình `SECRET_KEY`
 
@@ -45,41 +44,13 @@ SECRET_KEY=
 
 ---
 
-### Bước 3: Khởi Tạo Môi Trường Ảo & Chọn Python Interpreter
+### Bước 3: Tạo Python Interpreter trên PyCharm
 
 Tạo môi trường ảo để cô lập các thư viện phụ thuộc của dự án.
 
-#### 1. Tạo môi trường ảo:
-```bash
-python -m venv venv
-```
-
-#### 2. Kích hoạt môi trường ảo (Activate):
-- **Windows (PowerShell):**
-  ```powershell
-  . env\Scripts\Activate.ps1
-  ```
-  *(Nếu gặp lỗi Execution Policy, mở PowerShell dưới quyền Admin và chạy: `Set-ExecutionPolicy Unrestricted`)*
-
-- **Windows (Command Prompt - CMD):**
-  ```cmd
-  . env\Scripts ctivate.bat
-  ```
-
-- **macOS / Linux:**
-  ```bash
-  source venv/bin/activate
-  ```
-
-#### 3. Cấu hình Python Interpreter trong IDE:
-- **VS Code:**
-  1. Nhấn tổ hợp phím `Ctrl + Shift + P` (hoặc `Cmd + Shift + P` trên Mac).
-  2. Gõ và chọn `Python: Select Interpreter`.
-  3. Chọn đường dẫn tới môi trường `venv` vừa tạo (ví dụ: `./venv/bin/python` hoặc `./venv/Scripts/python.exe`).
-- **PyCharm:**
-  1. Vào `File` > `Settings` (trên Mac: `PyCharm` > `Preferences`).
-  2. Chọn `Project: <Tên_Dự_Án>` > `Python Interpreter`.
-  3. Click `Add Interpreter` > `Add Local Interpreter...` > Chọn `Existing environment` và trỏ tới file python trong thư mục `venv`.
+1. Vào `File` > `Settings`
+2. Chọn `Python` > `Interpreter`
+3. Chọn `Add Interpreter` > `Add Local Interpreter` > `OK`
 
 ---
 
