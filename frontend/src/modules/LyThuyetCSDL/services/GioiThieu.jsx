@@ -86,7 +86,7 @@ const GioiThieu = () => {
                             Chuẩn hóa lược đồ quan hệ
                         </td>
                         <td>
-                            Phân tích dạng chuẩn hiện tại (1NF, 2NF, 3NF, BCNF)
+                            Phân tích dạng chuẩn (2NF, 3NF, BCNF)
                             và thực hiện phân rã để đưa lược đồ lên dạng chuẩn
                             cao hơn.
                         </td>

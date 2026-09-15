@@ -89,6 +89,10 @@ def them_phu_thuoc_ham(thuoc_tinh_ve_trai, thuoc_tinh_ve_phai, tap_thuoc_tinh, t
 
     phu_thuoc_ham = dinh_dang_phu_thuoc_ham(ve_trai, ve_phai)
 
+    for vt, vp in zip(ve_trai, ve_phai):
+        if not co_phai_thuoc_tinh_hop_le(vt) or not co_phai_thuoc_tinh_hop_le(vp):
+            return False, LoaiThongBao.NGUY_HIEM, f"Phụ thuộc hàm {phu_thuoc_ham} không hợp lệ"
+
     if not ve_trai or not ve_phai:
         return False, LoaiThongBao.NGUY_HIEM, "Hai vế của phụ thuộc hàm không được rỗng"
 

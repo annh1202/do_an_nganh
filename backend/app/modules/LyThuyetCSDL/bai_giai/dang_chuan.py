@@ -106,9 +106,11 @@ def nang_dang_chuan_2(tap_thuoc_tinh, tap_phu_thuoc_ham):
             (frozenset(ve_trai), frozenset(ve_phai))
             for ve_trai, ve_phai in danh_sach_pth
         })
+
+        tap_phu_thuoc_ham_trong_bang_moi = loc_phu_thuoc_ham(thuoc_tinh_trong_bang_moi, tap_phu_thuoc_ham)
         dinh_dang_tap_phu_thuoc_ham_trong_bang_moi = ", ".join(
-            dinh_dang_tap_phu_thuoc_ham_tuple(danh_sach_pth)
-        ) if danh_sach_pth else "không có phụ thuộc hàm nào"
+            dinh_dang_tap_phu_thuoc_ham_tuple(tap_phu_thuoc_ham_trong_bang_moi)
+        )
 
         cac_bang_duoc_tach.append(
             f"R{i}({dinh_dang_tap_thuoc_tinh_trong_bang_moi}) "
@@ -153,33 +155,6 @@ def nang_dang_chuan_2(tap_thuoc_tinh, tap_phu_thuoc_ham):
         f"chứa khóa ứng viên {dinh_dang_khoa_ung_vien} "
         f"và các thuộc tính còn lại."
     )
-
-    # Kiểm tra phụ thuộc hàm nào chưa có
-    pth_chua_co = []
-    for ve_trai, ve_phai in tap_phu_thuoc_ham_con_lai:
-        tap_phu_thuoc = set(ve_trai) | set(ve_phai)
-        # Kiểm tra xem có bảng nào chứa trọn vẹn cả vế trái và vế phải không
-        da_co = any(tap_phu_thuoc.issubset(bang) for bang in danh_sach_bang_da_xet)
-
-        if not da_co:
-            pth_chua_co.append((set(ve_trai), set(ve_phai)))
-
-    if pth_chua_co:
-        for vt_pth, vp_pth in pth_chua_co:
-            so_thu_tu_bang += 1
-            tap_pth_moi = vt_pth | vp_pth
-            danh_sach_bang_da_xet.append(tap_pth_moi)
-
-            dinh_dang_tap_thuoc_tinh_moi = ", ".join(sorted(tap_pth_moi))
-            dinh_dang_pth = dinh_dang_phu_thuoc_ham(vt_pth, vp_pth)
-
-            cac_bang_duoc_tach.append(
-                f"R{so_thu_tu_bang}({dinh_dang_tap_thuoc_tinh_moi}) với {{ {dinh_dang_pth} }}"
-            )
-            cac_buoc_giai.append(
-                f"Tạo thêm bảng R{so_thu_tu_bang}({dinh_dang_tap_thuoc_tinh_moi}) "
-                f"để bảo toàn phụ thuộc hàm {dinh_dang_pth}."
-            )
 
     return "\n".join(cac_bang_duoc_tach), cac_buoc_giai
 
@@ -478,58 +453,58 @@ if __name__ == '__main__':
     # ]
 
     # test dạng chuẩn 3
-    # tap_thuoc_tinh = [
-    #     ["A", "B", "C"],
-    #     ["A", "B", "C"],
-    #     ["A", "B", "C"],
-    #     ["A", "B", "C", "D"],
-    #     ["A", "B", "C", "D", "E"],
-    #     ["A", "B", "C", "D"],
-    #     ["A", "B", "C", "D", "E"],
-    #     ["A", "B", "C", "D"],
-    #     ["A", "B", "C", "D", "E", "F"],
-    #     ["A", "B", "C", "D", "E", "F", "G"]
-    # ]
-    #
-    # tap_phu_thuoc_ham = [
-    #     ["A → B", "B → C"],
-    #     ["AB → C"],
-    #     ["A → B", "B → A", "A → C"],
-    #     ["A → B", "B → C", "C → D"],
-    #     ["A → B", "A → C", "B → D", "C → E"],
-    #     ["A → B", "B → A", "A → C", "B → D"],
-    #     ["A → B", "B → A", "A → C", "B → D", "C → E"],
-    #     ["A → B", "B → C", "C → A", "A → D"],
-    #     ["AB → C", "C → D", "D → E", "AB → F"],
-    #     ["AB → C", "AC → B", "A → D", "B → E", "C → F", "D → G"]
-    # ]
-
-    # test dạng chuẩn boyce-codd
     tap_thuoc_tinh = [
-        ["A", "B", "C", "D"],
-        ["A", "B", "C", "D"],
-        ["A", "B", "C", "D", "E"],
+        ["A", "B", "C"],
+        ["A", "B", "C"],
         ["A", "B", "C"],
         ["A", "B", "C", "D"],
         ["A", "B", "C", "D", "E"],
         ["A", "B", "C", "D"],
         ["A", "B", "C", "D", "E"],
         ["A", "B", "C", "D"],
-        ["A", "B", "C", "D", "E", "F"]
+        ["A", "B", "C", "D", "E", "F"],
+        ["A", "B", "C", "D", "E", "F", "G"]
     ]
 
     tap_phu_thuoc_ham = [
-        ["A → B", "B → C", "B → D"],
-        ["AB → C", "C → D", "D → A"],
-        ["A → B", "BC → D", "D → E"],
-        ["A → B", "A → C", "B → C"],
-        ["AB → C", "AB → D"],
-        ["A → B", "A → C", "C → D", "D → E"],
-        ["A → B", "B → C", "A → D"],
-        ["AB → C", "C → D", "C → E", "E → A"],
-        ["A → B", "C → D"],
-        ["A → B", "A → C", "D → E", "D → F"]
+        ["A → B", "B → C"],
+        ["AB → C"],
+        ["A → B", "B → A", "A → C"],
+        ["A → B", "B → C", "C → D"],
+        ["A → B", "A → C", "B → D", "C → E"],
+        ["A → B", "B → A", "A → C", "B → D"],
+        ["A → B", "B → A", "A → C", "B → D", "C → E"],
+        ["A → B", "B → C", "C → A", "A → D"],
+        ["AB → C", "C → D", "D → E", "AB → F"],
+        ["AB → C", "AC → B", "A → D", "B → E", "C → F", "D → G"]
     ]
+
+    # test dạng chuẩn boyce-codd
+    # tap_thuoc_tinh = [
+    #     ["A", "B", "C", "D"],
+    #     ["A", "B", "C", "D"],
+    #     ["A", "B", "C", "D", "E"],
+    #     ["A", "B", "C"],
+    #     ["A", "B", "C", "D"],
+    #     ["A", "B", "C", "D", "E"],
+    #     ["A", "B", "C", "D"],
+    #     ["A", "B", "C", "D", "E"],
+    #     ["A", "B", "C", "D"],
+    #     ["A", "B", "C", "D", "E", "F"]
+    # ]
+    #
+    # tap_phu_thuoc_ham = [
+    #     ["A → B", "B → C", "B → D"],
+    #     ["AB → C", "C → D", "D → A"],
+    #     ["A → B", "BC → D", "D → E"],
+    #     ["A → B", "A → C", "B → C"],
+    #     ["AB → C", "AB → D"],
+    #     ["A → B", "A → C", "C → D", "D → E"],
+    #     ["A → B", "B → C", "A → D"],
+    #     ["AB → C", "C → D", "C → E", "E → A"],
+    #     ["A → B", "C → D"],
+    #     ["A → B", "A → C", "D → E", "D → F"]
+    # ]
 
     i = 1
     for ttt, tpth in zip(tap_thuoc_tinh, tap_phu_thuoc_ham):

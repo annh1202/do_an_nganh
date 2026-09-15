@@ -145,7 +145,7 @@ def route_tai_de_len(data: DeBaiTimBaoDongTapPhuThuocHam, request: Request):
 
 
 @router.post("/giai-de", response_model=PhanHoi[BaiGiai])
-def route_giai_bao_dong_tap_thuoc_tinh(request: Request):
+def route_giai_bao_dong_tap_phu_thuoc_ham(request: Request):
     trang_thai = lay_bao_dong_tap_phu_thuoc_ham_session(request)
 
     tap_phu_thuoc_ham = trang_thai[KhoaSession.TAP_PHU_THUOC_HAM]
