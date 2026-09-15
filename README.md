@@ -35,7 +35,7 @@ git clone https://github.com/annh1202/do_an_nganh.git
 
 ### Bước 2: Tạo File Cấu Hình Biến Môi Trường
 
-Tạo một file mới tên `.env` tại thư mục gốc của dự án. Thêm cấu hình `SECRET_KEY`
+Tạo một file mới tên `.env` trong thư mục backend. Thêm cấu hình `SECRET_KEY`
 
 ```env
 # Cấu hình biến môi trường
